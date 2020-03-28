@@ -34,7 +34,7 @@ public class BiliBili implements MCommand {
     public static final BiliBili INSTANCE = new BiliBili();
     public static final Pattern checker = Pattern.compile(
             "^https://(www\\.|)bilibili\\.com/video/([0-9A-Za-z]+)(/|)(\\?.*|)$"
-    ), b23 = Pattern.compile("^https://b23\\.tv/([0-9A-Za-z])$");
+    ), b23 = Pattern.compile("^https://b23\\.tv/([0-9A-Za-z]+)$");
 
     /*
 table='fZodR9XQDSUm21yCkr6zBqiveYah8bt4xsWpHnJE7jL5VG3guMTKNPAwcF'
