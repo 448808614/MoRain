@@ -26,6 +26,8 @@ import java.util.Random;
 import java.util.regex.Matcher;
 
 public class Main extends Plugin {
+    public static final String VERSION = "1.0";
+
     @Override
     public String getName() {
         return "Main";
@@ -71,6 +73,7 @@ public class Main extends Plugin {
         CommandMgr.register("perm", new Perm());
         CommandMgr.register("perm-test", new TestPerm());
         CommandMgr.register("s-logging", new Logging());
+        CommandMgr.register("about", new Version());
         MessageSendEvent.handlers.register(event -> {
             final MessagePacket<?, ?> packet = event.getEvent();
             final String string = packet.getMessage().toString().trim();
