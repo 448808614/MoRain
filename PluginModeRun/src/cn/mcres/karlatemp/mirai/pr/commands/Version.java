@@ -32,7 +32,7 @@ public class Version implements MCommand {
             a(File.pathSeparator)
     );
     public static final Pattern p2 = Pattern.compile(
-            "^mirai-([A-Za-z0-9.\\-_]+)-([0-9.]+)\\.jar$"
+            "^mirai-([A-Za-z0-9.\\-_]+)-(([0-9.]+)(|-[A-Za-z0-9_]+))\\.jar$"
     );
 
     @Override
