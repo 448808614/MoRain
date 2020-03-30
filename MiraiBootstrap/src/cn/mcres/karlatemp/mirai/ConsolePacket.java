@@ -16,10 +16,15 @@ import net.mamoe.mirai.contact.QQ;
 import net.mamoe.mirai.data.FriendNameRemark;
 import net.mamoe.mirai.data.PreviousNameList;
 import net.mamoe.mirai.data.Profile;
+import net.mamoe.mirai.event.events.EventCancelledException;
 import net.mamoe.mirai.message.MessagePacket;
+import net.mamoe.mirai.message.MessageReceipt;
+import net.mamoe.mirai.message.data.Message;
 import net.mamoe.mirai.message.data.MessageChain;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.Future;
 
 public final class ConsolePacket extends MessagePacket<QQ, Contact> {
     public static final ConsolePacket INSTANCE = new ConsolePacket();
@@ -79,6 +84,30 @@ public final class ConsolePacket extends MessagePacket<QQ, Contact> {
         @Override
         public CoroutineContext getCoroutineContext() {
             throw new UnsupportedOperationException();
+        }
+
+        @NotNull
+        @Override
+        public Future<MessageReceipt<? extends Contact>> sendMessageAsync(@NotNull String message) {
+            return Console.INSTANCE.sendMessageAsync(message);
+        }
+
+        @NotNull
+        @Override
+        public Future<MessageReceipt<? extends Contact>> sendMessageAsync(@NotNull Message message) {
+            return Console.INSTANCE.sendMessageAsync(message);
+        }
+
+        @NotNull
+        @Override
+        public MessageReceipt<? extends Contact> sendMessage(@NotNull String message) {
+            return Console.INSTANCE.sendMessage(message);
+        }
+
+        @NotNull
+        @Override
+        public MessageReceipt<? extends Contact> sendMessage(@NotNull Message message) throws EventCancelledException, IllegalStateException {
+            return Console.INSTANCE.sendMessage(message);
         }
     };
 
