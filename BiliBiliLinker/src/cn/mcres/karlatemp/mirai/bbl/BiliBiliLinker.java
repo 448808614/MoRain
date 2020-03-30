@@ -110,10 +110,10 @@ public class BiliBiliLinker extends PluginBase {
     }
 
     private static final Pattern p1 = Pattern.compile(
-            "^https://(www\\.|)bilibili\\.com/video/([A-Za-z0-9]+)(/|)(\\?.*|)$"
+            "^https://(www\\.|)bilibili\\.com/video/([A-Za-z0-9]+)(/.*|)$"
     );
     private static final Pattern p2 = Pattern.compile(
-            "^https://b23\\.tv/([0-9A-Za-z]+)(/|)(|\\?.*)$"
+            "^https://b23\\.tv/([0-9A-Za-z]+)(/.*|)$"
     );
 
     private void handle(MessagePacket<?, ?> event) {
