@@ -156,7 +156,7 @@ public class Main extends Plugin {
                 );
                 event.setCancelled(true);
             }
-            if (packet.getMessage().contains("颜色")) {
+            if (packet.getMessage().eq("颜色")) {
                 packet.getSubject().sendMessageAsync(
                         packet.getSubject().uploadImage(new File("x509/Color.jpg"))
                 );
