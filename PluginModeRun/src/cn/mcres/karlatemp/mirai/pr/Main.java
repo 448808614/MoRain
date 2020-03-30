@@ -33,7 +33,7 @@ import java.util.Random;
 import java.util.regex.Matcher;
 
 public class Main extends Plugin {
-    public static final String VERSION = "1.0.3";
+    public static final String VERSION = "1.0.4";
 
     @Override
     public String getName() {
