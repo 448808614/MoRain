@@ -16,6 +16,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.QQ;
+import net.mamoe.mirai.message.GroupMessage;
 import net.mamoe.mirai.message.MessagePacket;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.RichMessage;
@@ -160,8 +161,7 @@ def enc(x):
                         @Override
                         public void completed(SimpleHttpResponse response) {
                             try {
-                                final JsonObject bin = new JsonParser().parse(new String(response.getBodyBytes(), StandardCharsets.UTF_8)).getAsJsonObject();
-                                System.out.println("接收到返回");
+                                final JsonObject bin = JsonParser.parseString(new String(response.getBodyBytes(), StandardCharsets.UTF_8)).getAsJsonObject();
                                 switch (bin.get("code").getAsInt()) {
                                     case 0: {
                                         final JsonObject data = bin.get("data").getAsJsonObject();
@@ -181,11 +181,11 @@ def enc(x):
                                         System.out.println("Download Image finished.");
 
                                         builder.add(title + "\n");
-                                        String desc;
+                                        String desc, fullDesc;
                                         {
                                             final JsonElement element = data.get("desc");
-                                            if (element == null) desc = "";
-                                            else desc = element.getAsString().trim();
+                                            if (element == null) fullDesc = desc = "";
+                                            else fullDesc = desc = element.getAsString().trim();
                                             if (desc.length() > 15) {
                                                 desc = desc.substring(0, 15) + "...";
                                             }
@@ -193,25 +193,25 @@ def enc(x):
                                         }
                                         final JsonObject stat = data.get("stat").getAsJsonObject();
                                         builder.add("Up>> " + data.get("owner").getAsJsonObject().get("name").getAsString() + "\n");
-                                        builder.add("Aid>> " + data.get("aid") + "\n");
+                                        builder.add("Aid>> " + data.get("aid").getAsString() + "\n");
                                         builder.add("Bid>> " + data.get("bvid").getAsString() + "\n");
-                                        builder.add("弹幕>> " + stat.get("danmaku") + "\n");
-                                        builder.add("评论>> " + stat.get("reply") + "\n");
-                                        builder.add("硬币>> " + stat.get("coin") + "\n");
-                                        builder.add("收藏>> " + stat.get("favorite") + "\n");
-                                        builder.add("分享>> " + stat.get("share") + "\n");
-                                        builder.add("点赞>> " + stat.get("like") + "\n");
-                                        builder.add("不喜欢>> " + stat.get("dislike"));
-                                        System.out.println("信息构建完成");
+                                        builder.add("弹幕>> " + stat.get("danmaku").getAsString() + "\n");
+                                        builder.add("评论>> " + stat.get("reply").getAsString() + "\n");
+                                        builder.add("硬币>> " + stat.get("coin").getAsString() + "\n");
+                                        builder.add("收藏>> " + stat.get("favorite").getAsString() + "\n");
+                                        builder.add("分享>> " + stat.get("share").getAsString() + "\n");
+                                        builder.add("点赞>> " + stat.get("like").getAsString() + "\n");
+                                        builder.add("不喜欢>> " + stat.get("dislike").getAsString());
+                                        if (packet instanceof GroupMessage)
+                                            builder.add("\n=================================\n" + fullDesc.substring(0, Math.min(100, fullDesc.length())));
                                         contact.sendMessageAsync(builder.asMessageChain());
                                         contact.sendMessageAsync(
                                                 RichMessage.Templates.share("https://www.bilibili.com/video/av" + bin.get("aid"), title, desc, image)
                                         );
-                                        System.out.println("返回发送!");
                                         break;
                                     }
                                     default:
-                                        contact.sendMessageAsync("BiliBili > " + bin.get("message"));
+                                        contact.sendMessageAsync("BiliBili > " + bin.get("message").getAsString());
                                 }
                             } catch (Throwable exception) {
                                 exception.printStackTrace();
