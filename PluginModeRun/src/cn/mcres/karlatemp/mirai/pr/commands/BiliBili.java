@@ -15,10 +15,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.mamoe.mirai.contact.Contact;
+import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.QQ;
 import net.mamoe.mirai.message.GroupMessage;
 import net.mamoe.mirai.message.MessagePacket;
+import net.mamoe.mirai.message.MessageReceipt;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
+import net.mamoe.mirai.message.data.MessageUtils;
 import net.mamoe.mirai.message.data.RichMessage;
 import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
@@ -168,7 +171,6 @@ def enc(x):
                                         String title = data.get("title").getAsString(),
                                                 image = data.get("pic").getAsString() + "@448w_252h_1c_100q.jpg";
                                         MessageChainBuilder builder = new MessageChainBuilder();
-                                        System.out.println("Pic: " + image);
                                         File file = Http.download(String.valueOf(data.get("bvid").getAsString()), image);
                                         if (file == null) builder.add("无法获取图片(下载错误).\n\n");
                                         else {
@@ -178,9 +180,8 @@ def enc(x):
                                                 builder.add("上传图片失败，请等下再试\n");
                                             }
                                         }
-                                        System.out.println("Download Image finished.");
-
-                                        builder.add(title + "\n");
+                                        StringBuilder buffer = new StringBuilder();
+                                        buffer.append(title).append("\n");
                                         String desc, fullDesc;
                                         {
                                             final JsonElement element = data.get("desc");
@@ -192,22 +193,29 @@ def enc(x):
                                             if (desc.isEmpty()) desc = title;
                                         }
                                         final JsonObject stat = data.get("stat").getAsJsonObject();
-                                        builder.add("Up>> " + data.get("owner").getAsJsonObject().get("name").getAsString() + "\n");
-                                        builder.add("Aid>> " + data.get("aid").getAsString() + "\n");
-                                        builder.add("Bid>> " + data.get("bvid").getAsString() + "\n");
-                                        builder.add("弹幕>> " + stat.get("danmaku").getAsString() + "\n");
-                                        builder.add("评论>> " + stat.get("reply").getAsString() + "\n");
-                                        builder.add("硬币>> " + stat.get("coin").getAsString() + "\n");
-                                        builder.add("收藏>> " + stat.get("favorite").getAsString() + "\n");
-                                        builder.add("分享>> " + stat.get("share").getAsString() + "\n");
-                                        builder.add("点赞>> " + stat.get("like").getAsString() + "\n");
-                                        builder.add("不喜欢>> " + stat.get("dislike").getAsString());
-                                        if (packet instanceof GroupMessage)
-                                            builder.add("\n=================================\n" + fullDesc.substring(0, Math.min(100, fullDesc.length())));
-                                        contact.sendMessageAsync(builder.asMessageChain());
+                                        buffer.append("Up>> ").append(data.get("owner").getAsJsonObject().get("name").getAsString()).append("\n");
+                                        buffer.append("Aid>> ").append(data.get("aid").getAsString()).append("\n");
+                                        buffer.append("Bid>> ").append(data.get("bvid").getAsString()).append("\n");
+                                        buffer.append("弹幕>> ").append(stat.get("danmaku").getAsString()).append("\n");
+                                        buffer.append("评论>> ").append(stat.get("reply").getAsString()).append("\n");
+                                        buffer.append("硬币>> ").append(stat.get("coin").getAsString()).append("\n");
+                                        buffer.append("收藏>> ").append(stat.get("favorite").getAsString()).append("\n");
+                                        buffer.append("分享>> ").append(stat.get("share").getAsString()).append("\n");
+                                        buffer.append("点赞>> ").append(stat.get("like").getAsString()).append("\n");
+                                        buffer.append("不喜欢>> ").append(stat.get("dislike").getAsString());
+                                        if (packet instanceof GroupMessage) {
+                                            buffer.append("\n=================================\n");
+                                            cutDesc(fullDesc, buffer);
+                                        }
+                                        builder.add(buffer.toString());
                                         contact.sendMessageAsync(
                                                 RichMessage.Templates.share("https://www.bilibili.com/video/av" + bin.get("aid"), title, desc, image)
                                         );
+                                        try {
+                                            contact.sendMessage(builder.asMessageChain());
+                                        } catch (Throwable ignore) {
+                                            contact.sendMessage(new ExtendedMessageChain(builder.asMessageChain()));
+                                        }
                                         break;
                                     }
                                     default:
@@ -262,6 +270,11 @@ def enc(x):
                 }
             }
         }
+    }
+
+    private static void cutDesc(String fullDesc, StringBuilder buffer) {
+        if (fullDesc.length() > 100) buffer.append(fullDesc, 0, 100).append("...");
+        else buffer.append(fullDesc);
     }
 
     public static String make_check(String id) {
