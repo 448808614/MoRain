@@ -23,14 +23,14 @@ public class MessageCoder {
 
     public static MessageChain coder(String buffer, Contact contact) {
         MessageChainBuilder builder = new MessageChainBuilder(buffer.length() / 2);
-        int start = 0;
+        int start = -1;
         String find = "[mirai:";
         while (true) {
             final int begin = buffer.indexOf(find, start);
             if (begin == -1) break;
             final int end = buffer.indexOf(']', begin);
             if (end == -1) break;
-            builder.add(buffer.substring(start, begin));
+            builder.add(buffer.substring(Math.max(0, start), begin));
             String chunk = buffer.substring(begin + find.length(), end);
             start = end + 1;
             int split = chunk.indexOf('=');
@@ -67,7 +67,7 @@ public class MessageCoder {
             }
         }
         if (start + 1 != buffer.length()) {
-            builder.add(buffer.substring(start));
+            builder.add(buffer.substring(Math.max(start, 0)));
         }
         return builder.asMessageChain();
     }
