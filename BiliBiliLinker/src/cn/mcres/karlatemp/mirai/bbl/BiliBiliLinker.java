@@ -90,7 +90,7 @@ public class BiliBiliLinker extends PluginBase {
                 builder.add("不喜欢>> " + stat.get("dislike"));
                 event.getSubject().sendMessageAsync(builder.asMessageChain());
                 event.getSubject().sendMessageAsync(
-                        RichMessage.Templates.share("https://www.bilibili.com/video/" + bin.get("bvid"), title, desc, image)
+                        RichMessage.Templates.share("https://www.bilibili.com/video/" + bin.get("bvid").getAsString(), title, desc, image)
                 );
                 break;
             }
