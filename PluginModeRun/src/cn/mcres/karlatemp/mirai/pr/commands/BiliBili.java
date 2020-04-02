@@ -37,8 +37,8 @@ import java.util.regex.Pattern;
 public class BiliBili implements MCommand {
     public static final BiliBili INSTANCE = new BiliBili();
     public static final Pattern checker = Pattern.compile(
-            "^https://(www\\.|)bilibili\\.com/video/([A-Za-z0-9]+)(/.*|)$"
-    ), b23 = Pattern.compile("^https://b23\\.tv/([0-9A-Za-z]+)(/.*|)$");
+            "^https://(www\\.|)bilibili\\.com/video/([A-Za-z0-9]+)(/.*|\\?.*|)$"
+    ), b23 = Pattern.compile("^https://b23\\.tv/([0-9A-Za-z]+)(/.*|\\?.*|)$");
 
     /*
 table='fZodR9XQDSUm21yCkr6zBqiveYah8bt4xsWpHnJE7jL5VG3guMTKNPAwcF'

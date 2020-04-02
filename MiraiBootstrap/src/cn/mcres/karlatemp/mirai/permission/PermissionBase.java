@@ -19,6 +19,7 @@ public class PermissionBase implements Permissible {
     protected Permissible parent;
     protected final Deque<PermissionAttach> attaches;
     protected final Map<String, Boolean> permissions;
+    protected Boolean allPowered;
 
     public PermissionBase copyPointer() {
         return new PermissionBase(attaches, permissions);
@@ -65,9 +66,11 @@ public class PermissionBase implements Permissible {
         for (PermissionAttach attach : attaches) {
             permissions.putAll(attach.getPermissions());
         }
+        allPowered = permissions.get("*");
     }
 
     public Boolean hasPermission0(String perm) {
+        if (allPowered != null) return perm.equals("banned") ^ allPowered;
         final Boolean status = permissions.get(perm);
         if (status != null) return status;
         if (parent != null) return parent.hasPermission(perm);

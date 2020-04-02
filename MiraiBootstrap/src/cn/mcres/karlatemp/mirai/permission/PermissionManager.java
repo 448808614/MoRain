@@ -23,6 +23,42 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PermissionManager {
+    public static PermissionBase allocateGroup() {
+        return new PermissionBase() {
+            @Override
+            public String toString() {
+                return "Group{id=" + getName() + "}";
+            }
+        };
+    }
+
+    public static PermissionBase allocateQQGroup(long id) {
+        return new PermissionBase() {
+            @Override
+            public String toString() {
+                return "QQGroup{id=" + id + ", name=" + getName() + "}";
+            }
+        };
+    }
+
+    public static PermissionBase allocateQQAGroup(long id) {
+        return new PermissionBase() {
+            @Override
+            public String toString() {
+                return "QQAdminGroup{id=" + id + ", name=" + getName() + "}";
+            }
+        };
+    }
+
+    public static PermissionBase allocateUser() {
+        return new PermissionBase() {
+            @Override
+            public String toString() {
+                return "User{group=" + getName() + "}";
+            }
+        };
+    }
+
     private static final Gson g = new GsonBuilder()
             .disableHtmlEscaping()
             .setPrettyPrinting()
@@ -34,6 +70,14 @@ public class PermissionManager {
     public static PermissionBase default_;
     public static final File permissions = new File("perm.json");
     public static final ThreadLocal<Permissible> PERMISSIBLE_THREAD_LOCAL = ThreadLocal.withInitial(PermissionBase::new);
+
+    public static PermissionBase allocateUserV(long qq) {
+        return users.computeIfAbsent(qq, l -> allocateUser());
+    }
+
+    public static PermissionBase allocateGroupV(String name) {
+        return groups.computeIfAbsent(name, name0 -> (PermissionBase) allocateGroup().setName(name0));
+    }
 
     public static class FileDesc {
         public static class GroupDesc {
@@ -54,42 +98,7 @@ public class PermissionManager {
             qq_groups_admin.clear();
             fix();
             this.groups.forEach(group -> {
-                final Boolean status = group.permissions.get("*");
-                if (status != null) {
-                    groups.put(group.name, new PermissionBase() {
-                        {
-                            permissions.putAll(group.permissions);
-                        }
-
-                        @Override
-                        public boolean hasPermission(String permission) {
-                            return permission.equals("banned") ^ status;
-                        }
-
-                        @Override
-                        public Boolean hasPermission0(String perm) {
-                            return hasPermission(perm);
-                        }
-
-                        @Override
-                        public PermissionBase setName(String name) {
-                            super.setName(name);
-                            return this;
-                        }
-
-                        @Override
-                        public String toString() {
-                            return "Group{id=" + getName() + ", all-powered=" + status + "}";
-                        }
-                    }.setName(group.name));
-                    return;
-                }
-                PermissionBase pb = new PermissionBase() {
-                    @Override
-                    public String toString() {
-                        return "Group{id=" + getName() + "}";
-                    }
-                };
+                PermissionBase pb = allocateGroup();
                 pb.registerAttach().getPermissions().putAll(group.permissions);
                 pb.setName(group.name);
                 pb.recalculatePermissions();
@@ -102,65 +111,21 @@ public class PermissionManager {
             });
             this.users.forEach(group -> {
                 final Boolean status = group.permissions.get("*");
-                if (status != null) {
-                    groups.put(group.name, new PermissionBase() {
-                        {
-                            permissions.putAll(group.permissions);
-                        }
-
-                        @Override
-                        public boolean hasPermission(String permission) {
-                            return permission.equals("banned") ^ status;
-                        }
-
-                        @Override
-                        public Boolean hasPermission0(String perm) {
-                            return hasPermission(perm);
-                        }
-
-                        @Override
-                        public PermissionBase setName(String name) {
-                            super.setName(name);
-                            return this;
-                        }
-
-                        @Override
-                        public String toString() {
-                            return "User{group=" + getName() + ", all-powered=" + status + "}";
-                        }
-                    }.setName(group.name));
-                    return;
-                }
-                PermissionBase pb = new PermissionBase() {
-                    @Override
-                    public String toString() {
-                        return "User{group=" + getName() + "}";
-                    }
-                };
+                PermissionBase pb = allocateUser();
                 pb.registerAttach().getPermissions().putAll(group.permissions);
                 pb.setName(group.name);
                 pb.recalculatePermissions();
                 users.put(group.id, pb);
             });
             this.qq_groups.forEach(group -> {
-                PermissionBase pb = new PermissionBase() {
-                    @Override
-                    public String toString() {
-                        return "QQGroup{id=" + group.id + ", name=" + getName() + "}";
-                    }
-                };
+                PermissionBase pb = allocateQQGroup(group.id);
                 pb.registerAttach().getPermissions().putAll(group.permissions);
                 pb.setName(group.name);
                 pb.recalculatePermissions();
                 qq_groups.put(group.id, pb);
             });
             this.qq_groups_admin.forEach(group -> {
-                PermissionBase pb = new PermissionBase() {
-                    @Override
-                    public String toString() {
-                        return "QQAdminGroup{id=" + group.id + ", name=" + getName() + "}";
-                    }
-                };
+                PermissionBase pb = allocateQQAGroup(group.id);
                 pb.registerAttach().getPermissions().putAll(group.permissions);
                 pb.setName(group.name);
                 pb.recalculatePermissions();
