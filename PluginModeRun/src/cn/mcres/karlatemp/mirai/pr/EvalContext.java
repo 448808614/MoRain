@@ -8,6 +8,7 @@
 
 package cn.mcres.karlatemp.mirai.pr;
 
+import cn.mcres.karlatemp.mirai.MessageCoder;
 import cn.mcres.karlatemp.mxlib.tools.Toolkit;
 import cn.mcres.karlatemp.mxlib.tools.Unsafe;
 import jdk.internal.dynalink.beans.StaticClass;
@@ -17,6 +18,7 @@ import jdk.nashorn.internal.runtime.Undefined;
 
 import javax.script.ScriptException;
 import java.lang.reflect.Field;
+import java.nio.CharBuffer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -219,6 +221,16 @@ public class EvalContext {
         @Override
         protected Object call0(Object o, Object... objects) throws Throwable {
             return Class.forName((String) objects[0]);
+        }
+    };
+    public static final NativeFunction CONTROL = new NativeFunction("Control") {
+        @Override
+        protected Object call0(Object o, Object... objects) throws Throwable {
+            String str = String.valueOf(objects[0]);
+            if (str.length() > 150) {
+                throw new IllegalAccessException("Control String To Large");
+            }
+            return MessageCoder.control(CharBuffer.wrap(str));
         }
     };
     public static final NativeFunction TO_JS = new NativeFunction("ToJs") {

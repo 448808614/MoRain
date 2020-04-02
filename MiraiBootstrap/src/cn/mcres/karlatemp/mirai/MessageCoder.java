@@ -21,6 +21,74 @@ import java.util.regex.Pattern;
 public class MessageCoder {
     private static final Pattern pt = Pattern.compile("\\[mirai:(.+?)]");
 
+    public static StringBuilder control(CharBuffer buffer) {
+        StringBuilder builder = new StringBuilder();
+        boolean noNext = false;
+        int insert = 0;
+        while (buffer.hasRemaining()) {
+            char next = buffer.get();
+            switch (next) {
+                case '\u202e': {
+                    noNext = true;
+                    break;
+                }
+                case '\u202d':
+                case '\u202c': {
+                    noNext = false;
+                    break;
+                }
+                case '\n': {
+                    builder.append('\n');
+                    insert = buffer.length();
+                    break;
+                }
+                default: {
+                    if (noNext) {
+                        switch (next) {
+                            case '(':
+                                next = ')';
+                                break;
+                            case ')':
+                                next = '(';
+                                break;
+                            case '[':
+                                next = ']';
+                                break;
+                            case ']':
+                                next = '[';
+                                break;
+                            case '{':
+                                next = '}';
+                                break;
+                            case '}':
+                                next = '{';
+                                break;
+                            case '\\':
+                                next = '/';
+                                break;
+                            case '【':
+                                next = '】';
+                                break;
+                            case '】':
+                                next = '【';
+                                break;
+                            case '（':
+                                next = '）';
+                                break;
+                            case '）':
+                                next = '（';
+                                break;
+                        }
+                    }
+                    builder.insert(insert, next);
+                    if (!noNext) insert++;
+                    break;
+                }
+            }
+        }
+        return builder;
+    }
+
     public static MessageChain coder(String buffer, Contact contact) {
         MessageChainBuilder builder = new MessageChainBuilder(buffer.length() / 2);
         int start = -1;

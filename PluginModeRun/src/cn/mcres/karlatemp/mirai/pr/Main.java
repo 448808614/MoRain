@@ -62,6 +62,7 @@ public class Main extends Plugin {
             bindings.put("loadWithNewGlobal", null);
             bindings.put("exit", null);
             bindings.put("quit", null);
+            bindings.put("Control", EvalContext.CONTROL);
             if (PermissionManager.PERMISSIBLE_THREAD_LOCAL.get().hasPermission("magic.eval.unsafe")) {
                 bindings.put("GetField", EvalContext.GET_FIELD);
                 bindings.put("GetDeclaredField", EvalContext.GET_DECLARED_FIELD);
