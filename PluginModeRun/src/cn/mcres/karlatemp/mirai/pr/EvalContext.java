@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.Set;
 
 public class EvalContext {
-    public static class ExceptionBox extends Throwable {
+    public static class ExceptionBox extends RuntimeException {
         public final Object exception;
 
         public ExceptionBox(Object exception) {

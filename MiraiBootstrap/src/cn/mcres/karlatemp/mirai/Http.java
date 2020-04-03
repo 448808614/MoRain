@@ -52,6 +52,7 @@ public class Http {
     public static File download(String name, String url) {
         File file = new File(temp, name + ".jpg");
         if (file.isFile()) return file;
+        file.getParentFile().mkdirs();
         try {
             URL url0 = new URL(url);
             final URLConnection connection = url0.openConnection();

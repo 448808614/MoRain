@@ -82,6 +82,7 @@ public class Main extends Plugin {
         CommandMgr.register("perm-test", new TestPerm());
         CommandMgr.register("s-logging", new Logging());
         CommandMgr.register("about", new Version());
+        CommandMgr.register("image", new ImageC());
         TestInitialize.initialize();
         MessageSendEvent.handlers.register(event -> {
             final MessagePacket<?, ?> packet = event.getEvent();
