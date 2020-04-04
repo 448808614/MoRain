@@ -8,6 +8,7 @@
 
 package cn.mcres.karlatemp.mirai;
 
+import cn.mcres.karlatemp.mxlib.tools.Toolkit;
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
@@ -19,11 +20,22 @@ import net.mamoe.mirai.message.data.*;
 import org.apache.hc.core5.concurrent.CompletedFuture;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
 
 import java.util.concurrent.Future;
 
 public abstract class Console extends Contact {
     static Console INSTANCE;
+    static OnlineMessageSource.Outgoing source;
+
+    static {
+        ClassWriter writer = new ClassWriter(0);
+        writer.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, "cn/mcres/karlatemp/mirai/Console$MS$PACKET", null, "net/mamoe/mirai/message/data/OnlineMessageSource$Outgoing", null);
+        source = Toolkit.Reflection.allocObject(Toolkit.Reflection.defineClass(
+                Console.class.getClassLoader(), writer, null
+        ).asSubclass(OnlineMessageSource.Outgoing.class));
+    }
 
     public static Console getInstance() {
         return INSTANCE;
@@ -67,114 +79,7 @@ public abstract class Console extends Contact {
     @NotNull
     @Override
     public MessageReceipt<Contact> sendMessage(@NotNull String message) throws EventCancelledException, IllegalStateException {
-        MessageReceipt<Contact> receipt = new MessageReceipt<>(new MessageSource() {
-            @Override
-            public int length() {
-                return 0;
-            }
-
-            @Override
-            public char charAt(int index) {
-                return 0;
-            }
-
-            @NotNull
-            @Override
-            public CharSequence subSequence(int i, int i1) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public char get(int i) {
-                return 0;
-            }
-
-            @Override
-            public int compareTo(@NotNull String s) {
-                return 0;
-            }
-
-            @Override
-            public int getLength() {
-                return 0;
-            }
-
-            @Override
-            public long getId() {
-                return 0;
-            }
-
-            @Nullable
-            @Override
-            public Object ensureSequenceIdAvailable(@NotNull Continuation<? super Unit> continuation) {
-                return null;
-            }
-
-            @Override
-            public long getTime() {
-                return 0;
-            }
-
-            @Override
-            public long getSenderId() {
-                return 0;
-            }
-
-            @Override
-            public long getToUin() {
-                return 0;
-            }
-
-            @Override
-            public long getGroupId() {
-                return 0;
-            }
-
-            @NotNull
-            @Override
-            public MessageChain getOriginalMessage() {
-                return MessageUtils.newChain(message);
-            }
-
-            @Override
-            public boolean eq(@NotNull Message message) {
-                return false;
-            }
-
-            @Override
-            public boolean eq(@NotNull String s) {
-                return false;
-            }
-
-            @Override
-            public boolean contains(@NotNull String s) {
-                return false;
-            }
-
-            @NotNull
-            @Override
-            public CombinedMessage plus(@NotNull Message message) {
-                throw new UnsupportedOperationException();
-            }
-
-            @NotNull
-            @Override
-            public CombinedMessage plus(@NotNull String s) {
-                throw new UnsupportedOperationException();
-            }
-
-            @NotNull
-            @Override
-            public CombinedMessage plus(@NotNull SingleMessage singleMessage) {
-                throw new UnsupportedOperationException();
-            }
-
-            @NotNull
-            @Override
-            public CombinedMessage plus(@NotNull CharSequence charSequence) {
-                throw new UnsupportedOperationException();
-            }
-        }, ConsolePacket.INSTANCE.getSender(), null);
+        MessageReceipt<Contact> receipt = new MessageReceipt(source, ConsolePacket.INSTANCE.getSender(), null);
         write(message);
         return receipt;
     }

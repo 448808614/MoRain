@@ -22,7 +22,9 @@ import jdk.nashorn.internal.objects.Global;
 import jdk.nashorn.internal.runtime.ScriptObject;
 import net.mamoe.mirai.message.ContactMessage;
 import net.mamoe.mirai.message.MessagePacket;
+import net.mamoe.mirai.message.data.FlashImage;
 import net.mamoe.mirai.message.data.Image;
+import net.mamoe.mirai.message.data.Message;
 import net.mamoe.mirai.message.data.MessageUtils;
 import net.mamoe.mirai.message.data.PlainText;
 
@@ -85,7 +87,7 @@ public class Main extends Plugin {
         CommandMgr.register("s-logging", new Logging());
         CommandMgr.register("about", new Version());
         CommandMgr.register("image", new ImageC());
-        CommandMgr.register("message", new Message());
+        CommandMgr.register("message", new cn.mcres.karlatemp.mirai.pr.commands.Message());
         TestInitialize.initialize();
         MemberJLListener.register();
         MessageSendEvent.handlers.register(event -> {
@@ -187,6 +189,14 @@ public class Main extends Plugin {
                         ))
                 );
                 event.setCancelled(true);
+            }
+            for (Message mg : packet.getMessage()) {
+                if (mg instanceof FlashImage) {
+                    packet.getSubject().sendMessageAsync(
+                            MessageUtils.quote(packet.getMessage())
+                                    .plus(MessageUtils.newImage(((FlashImage) mg).getImage().getImageId()))
+                    );
+                }
             }
         });
     }

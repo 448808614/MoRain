@@ -140,7 +140,6 @@ public class Bootstrap {
     }
 
     public static void accept(ContactMessage event) {
-        // System.out.println("MIN " + event);
         if (event instanceof GroupMessage) {
             final Iterator<SingleMessage> iterator = event.getMessage().iterator();
             while (iterator.hasNext()) {
@@ -172,12 +171,11 @@ public class Bootstrap {
             );
         }
         if (Eval.eval(event.getMessage(), event)) return;
+        MessageSendEvent ms = new MessageSendEvent(event);
+        ms.post();
+        if (ms.isCancelled()) return;
         final LinkedList<ArgumentToken> tokens = ArgumentParser.parse(event.getMessage());
         if (!tokens.isEmpty()) {
-            MessageSendEvent ms = new MessageSendEvent(event);
-            ms.post();
-            if (ms.isCancelled()) return;
-            if (tokens.isEmpty()) return;
             final String key = tokens.poll().getAsString().toLowerCase();
             if (key.isEmpty()) return;
             if (key.charAt(0) != '/') {
