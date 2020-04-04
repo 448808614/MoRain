@@ -14,11 +14,10 @@ import cn.mcres.karlatemp.mirai.command.MCommand;
 import cn.mcres.karlatemp.mxlib.network.IPAddress;
 import cn.mcres.karlatemp.mxlib.network.minecraft.MinecraftProtocolHelper;
 import com.google.gson.JsonParser;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.QQ;
-import net.mamoe.mirai.message.MessagePacket;
+import net.mamoe.mirai.message.ContactMessage;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 
@@ -27,7 +26,7 @@ import java.util.LinkedList;
 
 public class Minecraft implements MCommand {
     @Override
-    public void invoke(Contact contact, QQ sender, MessagePacket<?, ?> packet, LinkedList<ArgumentToken> args) {
+    public void invoke(Contact contact, QQ sender, ContactMessage packet, LinkedList<ArgumentToken> args) {
         if (!args.isEmpty()) {
             switch (args.poll().getAsString()) {
                 case "server":

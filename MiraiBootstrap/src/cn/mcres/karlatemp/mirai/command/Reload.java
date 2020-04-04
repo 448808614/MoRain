@@ -8,13 +8,11 @@
 
 package cn.mcres.karlatemp.mirai.command;
 
-import cn.mcres.karlatemp.mirai.CommandMgr;
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken;
 import cn.mcres.karlatemp.mirai.plugin.PluginManager;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.QQ;
-import net.mamoe.mirai.message.MessagePacket;
-import org.jetbrains.annotations.NotNull;
+import net.mamoe.mirai.message.ContactMessage;
 
 import java.util.LinkedList;
 
@@ -25,7 +23,7 @@ public class Reload implements MCommand {
     }
 
     @Override
-    public void invoke(Contact contact, QQ sender, MessagePacket<?, ?> packet, LinkedList<ArgumentToken> args) {
+    public void invoke(Contact contact, QQ sender, ContactMessage packet, LinkedList<ArgumentToken> args) {
         PluginManager.reload();
     }
 }

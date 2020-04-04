@@ -11,8 +11,7 @@ package cn.mcres.karlatemp.mirai.command;
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.QQ;
-import net.mamoe.mirai.message.MessagePacket;
-import org.jetbrains.annotations.NotNull;
+import net.mamoe.mirai.message.ContactMessage;
 
 import java.util.LinkedList;
 
@@ -21,5 +20,5 @@ public interface MCommand {
         return null;
     }
 
-    void invoke(Contact contact, QQ sender, MessagePacket<?, ?> packet, LinkedList<ArgumentToken> args);
+    void invoke(Contact contact, QQ sender, ContactMessage packet, LinkedList<ArgumentToken> args) throws Exception;
 }

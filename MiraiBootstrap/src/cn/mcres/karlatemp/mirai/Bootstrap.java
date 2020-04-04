@@ -11,6 +11,8 @@ package cn.mcres.karlatemp.mirai;
 import cn.mcres.karlatemp.mirai.arguments.ArgumentParser;
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken;
 import cn.mcres.karlatemp.mirai.command.MCommand;
+import cn.mcres.karlatemp.mirai.event.MemberJoinGroupEvent;
+import cn.mcres.karlatemp.mirai.event.MemberLeaveGroupEvent;
 import cn.mcres.karlatemp.mirai.event.MessageSendEvent;
 import cn.mcres.karlatemp.mirai.permission.Permissible;
 import cn.mcres.karlatemp.mirai.permission.PermissionManager;
@@ -20,7 +22,10 @@ import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.BotFactoryJvm;
 import net.mamoe.mirai.contact.MemberPermission;
 import net.mamoe.mirai.event.events.BotEvent;
+import net.mamoe.mirai.event.events.MemberJoinEvent;
+import net.mamoe.mirai.event.events.MemberLeaveEvent;
 import net.mamoe.mirai.japt.Events;
+import net.mamoe.mirai.message.ContactMessage;
 import net.mamoe.mirai.message.FriendMessage;
 import net.mamoe.mirai.message.GroupMessage;
 import net.mamoe.mirai.message.MessagePacket;
@@ -134,16 +139,7 @@ public class Bootstrap {
         } while (true);
     }
 
-    public static void accept(BotEvent event) {
-//        MessageSvc.PbGetMsg.GetMsgSuccess;
-        if (event instanceof MessagePacket<?, ?>) {
-            accept((MessagePacket<?, ?>) event);
-        } else {
-            System.out.println("Unknown message " + event + " : " + event.getClass());
-        }
-    }
-
-    public static void accept(MessagePacket<?, ?> event) {
+    public static void accept(ContactMessage event) {
         // System.out.println("MIN " + event);
         if (event instanceof GroupMessage) {
             final Iterator<SingleMessage> iterator = event.getMessage().iterator();
@@ -198,7 +194,14 @@ public class Bootstrap {
                     event.getSubject().sendMessageAsync("不可以!");
                     return;
                 }
-                command.invoke(event.getSubject(), event.getSender(), event, tokens);
+                AsyncExec.service.execute(() -> {
+                    try {
+                        command.invoke(event.getSubject(), event.getSender(), event, tokens);
+                    } catch (Throwable dump) {
+                        event.getSubject().sendMessageAsync(dump.toString());
+                        Logger.getLogger("CommandLogger").log(Level.SEVERE, "Exception in executing command " + key, dump);
+                    }
+                });
             }
         }
     }
@@ -213,13 +216,25 @@ public class Bootstrap {
         if (cmd == null) {
             System.out.println("Command not found: " + line);
         } else {
-            cmd.invoke(Console.getInstance(), ConsolePacket.INSTANCE.getSender(), ConsolePacket.INSTANCE, parse);
+            try {
+                cmd.invoke(Console.getInstance(), ConsolePacket.INSTANCE.getSender(), ConsolePacket.INSTANCE, parse);
+            } catch (Throwable dump) {
+                Logger.getLogger("CommandLogger").log(Level.SEVERE, "Exception in executing command.", dump);
+            }
         }
     }
 
     public static void initialize() {
         Events.subscribeAlways(GroupMessage.class, Bootstrap::accept);
         Events.subscribeAlways(FriendMessage.class, Bootstrap::accept);
+        Events.subscribeAlways(MemberLeaveEvent.class, event -> {
+            System.out.println("Leave " + event);
+            new MemberLeaveGroupEvent(event).post();
+        });
+        Events.subscribeAlways(MemberJoinEvent.class, event -> {
+            System.out.println("Join " + event);
+            new MemberJoinGroupEvent(event).post();
+        });
         PluginManager.reload();
         AtomicInteger counter = new AtomicInteger();
         Eval.EvalThreadingManager.pool = new Eval.ThreadPool(task -> {

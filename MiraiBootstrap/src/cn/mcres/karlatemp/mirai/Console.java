@@ -181,13 +181,13 @@ public abstract class Console extends Contact {
 
     @NotNull
     @Override
-    public Future<MessageReceipt<? extends Contact>> sendMessageAsync(@NotNull String message) {
+    public Future<MessageReceipt<Contact>> sendMessageAsync(@NotNull String message) {
         return new CompletedFuture<>(sendMessage(message));
     }
 
     @NotNull
     @Override
-    public Future<MessageReceipt<? extends Contact>> sendMessageAsync(@NotNull Message message) {
+    public Future<MessageReceipt<Contact>> sendMessageAsync(@NotNull Message message) {
         return new CompletedFuture<>(sendMessage(message));
     }
 

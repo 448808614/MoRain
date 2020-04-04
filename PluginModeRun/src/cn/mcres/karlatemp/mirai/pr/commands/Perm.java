@@ -15,7 +15,7 @@ import cn.mcres.karlatemp.mirai.permission.PermissionBase;
 import cn.mcres.karlatemp.mirai.permission.PermissionManager;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.QQ;
-import net.mamoe.mirai.message.MessagePacket;
+import net.mamoe.mirai.message.ContactMessage;
 
 import java.util.LinkedList;
 import java.util.Objects;
@@ -27,7 +27,7 @@ public class Perm implements MCommand {
     }
 
     @Override
-    public void invoke(Contact contact, QQ sender, MessagePacket<?, ?> packet, LinkedList<ArgumentToken> args) {
+    public void invoke(Contact contact, QQ sender, ContactMessage packet, LinkedList<ArgumentToken> args) {
         if (args.isEmpty()) {
             return;
         }

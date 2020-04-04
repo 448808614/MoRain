@@ -15,10 +15,12 @@ import cn.mcres.karlatemp.mirai.event.MessageSendEvent;
 import cn.mcres.karlatemp.mirai.permission.PermissionManager;
 import cn.mcres.karlatemp.mirai.plugin.Plugin;
 import cn.mcres.karlatemp.mirai.pr.commands.*;
+import cn.mcres.karlatemp.mirai.pr.listener.MemberJLListener;
 import cn.mcres.karlatemp.mirai.pr.magic.Color;
 import cn.mcres.karlatemp.mxlib.share.$MXBukkitLibConfiguration;
 import jdk.nashorn.internal.objects.Global;
 import jdk.nashorn.internal.runtime.ScriptObject;
+import net.mamoe.mirai.message.ContactMessage;
 import net.mamoe.mirai.message.MessagePacket;
 import net.mamoe.mirai.message.data.Image;
 import net.mamoe.mirai.message.data.MessageUtils;
@@ -83,9 +85,11 @@ public class Main extends Plugin {
         CommandMgr.register("s-logging", new Logging());
         CommandMgr.register("about", new Version());
         CommandMgr.register("image", new ImageC());
+        CommandMgr.register("message", new Message());
         TestInitialize.initialize();
+        MemberJLListener.register();
         MessageSendEvent.handlers.register(event -> {
-            final MessagePacket<?, ?> packet = event.getEvent();
+            final ContactMessage packet = event.getEvent();
             final String string = packet.getMessage().toString().trim();
             if (packet.getMessage().toString().startsWith("/")) return;
             if (packet.getMessage().eq("jd")) {

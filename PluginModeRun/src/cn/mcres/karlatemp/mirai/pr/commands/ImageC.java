@@ -12,22 +12,16 @@ import cn.mcres.karlatemp.mirai.Http;
 import cn.mcres.karlatemp.mirai.arguments.ArgumentImageToken;
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken;
 import cn.mcres.karlatemp.mirai.command.MCommand;
-import cn.mcres.karlatemp.mirai.pr.EvalContext;
-import kotlinx.atomicfu.AtomicRef;
 import kotlinx.coroutines.GlobalScope;
-import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.QQ;
 import net.mamoe.mirai.event.Listener;
 import net.mamoe.mirai.event.internal.EventInternalJvmKt;
-import net.mamoe.mirai.japt.Events;
-import net.mamoe.mirai.japt.internal.EventsImplKt;
+import net.mamoe.mirai.message.ContactMessage;
 import net.mamoe.mirai.message.FriendMessage;
 import net.mamoe.mirai.message.GroupMessage;
-import net.mamoe.mirai.message.MessagePacket;
 import net.mamoe.mirai.message.data.Image;
 import net.mamoe.mirai.message.data.Message;
-import net.mamoe.mirai.message.data.OfflineImage;
 import net.mamoe.mirai.message.data.OnlineImage;
 
 import javax.imageio.ImageIO;
@@ -40,7 +34,6 @@ import java.util.Base64;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class ImageC implements MCommand {
     public static BufferedImage read(Image i) throws IOException {
@@ -52,7 +45,8 @@ public class ImageC implements MCommand {
         return null;
     }
 
-    public static void waitImage(LinkedList<ArgumentToken> tokens, MessagePacket<?, ?> packet, BiConsumer<BufferedImage, Throwable> image) {
+    @SuppressWarnings("KotlinInternalInJava")
+    public static void waitImage(LinkedList<ArgumentToken> tokens, ContactMessage packet, BiConsumer<BufferedImage, Throwable> image) {
         if (tokens != null) {
             if (!tokens.isEmpty()) {
                 final ArgumentToken token = tokens.poll();
@@ -68,7 +62,7 @@ public class ImageC implements MCommand {
         }
         AtomicReference<Listener<?>> listener = new AtomicReference<>();
         long current = System.currentTimeMillis();
-        listener.set(EventInternalJvmKt._subscribeEventForJaptOnly(MessagePacket.class, GlobalScope.INSTANCE, c -> {
+        listener.set(EventInternalJvmKt._subscribeEventForJaptOnly(ContactMessage.class, GlobalScope.INSTANCE, c -> {
             if (System.currentTimeMillis() - current > 60000) {
                 listener.get().complete();
                 return;
@@ -114,7 +108,7 @@ public class ImageC implements MCommand {
     }
 
     @Override
-    public void invoke(Contact contact, QQ sender, MessagePacket<?, ?> packet, LinkedList<ArgumentToken> args) {
+    public void invoke(Contact contact, QQ sender, ContactMessage packet, LinkedList<ArgumentToken> args) {
         if (args.isEmpty()) return;
         switch (args.poll().getAsString()) {
             case "gray": {

@@ -8,6 +8,8 @@
 
 package cn.mcres.karlatemp.mirai;
 
+import cn.mcres.karlatemp.mirai.eval.NativeFunction;
+import cn.mcres.karlatemp.mirai.eval.ResultMethod;
 import cn.mcres.karlatemp.mirai.permission.Permissible;
 import cn.mcres.karlatemp.mirai.permission.PermissionManager;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
@@ -158,7 +160,6 @@ public class Eval {
                 pool.release(context);
                 return result;
             } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
-                ignore.printStackTrace();
                 context.thread.interrupt();
                 try {
                     Thread.sleep(500L);
@@ -183,7 +184,7 @@ public class Eval {
 
     public static BiConsumer<Bindings, ScriptContext> GLOBAL_OVERRIDER;
 
-    public static String invoke(String code, String source, BiConsumer<Bindings, ScriptContext> overrider) {
+    public static Object invoke(String code, String source, BiConsumer<Bindings, ScriptContext> overrider) {
         final Bindings bindings = engine.createBindings();
         ScriptContext context = new SimpleScriptContext();
         context.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
@@ -191,6 +192,8 @@ public class Eval {
         StringWriter sw = new StringWriter();
         context.setWriter(sw);
         context.setErrorWriter(sw);
+        ResultMethod result0 = new ResultMethod();
+        bindings.put("result", result0);
         if (GLOBAL_OVERRIDER != null) GLOBAL_OVERRIDER.accept(bindings, context);
         if (overrider != null) overrider.accept(bindings, context);
         Object value;
@@ -199,6 +202,7 @@ public class Eval {
         } catch (Throwable e) {
             return e.toString();
         }
+        if (value == null) value = result0.result;
         if (value == null) {
             if (sw.getBuffer().length() > 0) {
                 return sw.toString();
@@ -206,7 +210,7 @@ public class Eval {
                 return "(....什么都没有....)";
             }
         }
-        return String.valueOf(value);
+        return value;
     }
 
     public static boolean eval(MessageChain chain, MessagePacket<?, ?> event) {
@@ -226,7 +230,7 @@ public class Eval {
             String value = EvalThreadingManager.process(
                     () -> {
                         PermissionManager.PERMISSIBLE_THREAD_LOCAL.set(permissible);
-                        return invoke(code, "<eval " + event.getSender().toString() + ">", null);
+                        return String.valueOf(invoke(code, "<eval " + event.getSender().toString() + ">", null));
                     },
                     4000L, TimeUnit.MILLISECONDS);
             if (value.trim().startsWith("/自闭")) {
