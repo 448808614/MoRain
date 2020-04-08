@@ -17,22 +17,15 @@ import cn.mcres.karlatemp.mirai.plugin.Plugin;
 import cn.mcres.karlatemp.mirai.pr.commands.*;
 import cn.mcres.karlatemp.mirai.pr.listener.MemberJLListener;
 import cn.mcres.karlatemp.mirai.pr.magic.Color;
-import cn.mcres.karlatemp.mxlib.share.$MXBukkitLibConfiguration;
 import jdk.nashorn.internal.objects.Global;
-import jdk.nashorn.internal.runtime.ScriptObject;
 import net.mamoe.mirai.message.ContactMessage;
-import net.mamoe.mirai.message.MessagePacket;
-import net.mamoe.mirai.message.data.FlashImage;
-import net.mamoe.mirai.message.data.Image;
+import net.mamoe.mirai.message.GroupMessage;
 import net.mamoe.mirai.message.data.Message;
-import net.mamoe.mirai.message.data.MessageUtils;
-import net.mamoe.mirai.message.data.PlainText;
+import net.mamoe.mirai.message.data.*;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.security.SecureRandom;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.Random;
 import java.util.regex.Matcher;
 
@@ -88,6 +81,7 @@ public class Main extends Plugin {
         CommandMgr.register("about", new Version());
         CommandMgr.register("image", new ImageC());
         CommandMgr.register("message", new cn.mcres.karlatemp.mirai.pr.commands.Message());
+        CommandMgr.register("wk", new WK());
         TestInitialize.initialize();
         MemberJLListener.register();
         MessageSendEvent.handlers.register(event -> {
@@ -158,37 +152,22 @@ public class Main extends Plugin {
                     event.setCancelled(true);
                 }
             }
-            if (packet.getMessage().contains("开车")) {
-                packet.getSubject().sendMessageAsync(
-                        packet.getSubject().uploadImage(new File("x509/Dr.jpg"))
-                );
-                event.setCancelled(true);
-            }
-            if (packet.getMessage().eq("颜色")) {
-                packet.getSubject().sendMessageAsync(
-                        packet.getSubject().uploadImage(new File("x509/Color.jpg"))
-                );
-                event.setCancelled(true);
-            }
-            if (packet.getMessage().contains("上图")) {
-                packet.getSubject().sendMessageAsync(
-                        packet.getSubject().uploadImage(new File("x509/NoJavaWithBukkit.jpg"))
-                );
-                event.setCancelled(true);
-            }
-            if (packet.getMessage().contains("运行错误")) {
-                packet.getSubject().sendMessageAsync(
-                        packet.getSubject().uploadImage(new File("x509/RuntimeError.jpg"))
-                );
-                event.setCancelled(true);
-            }
-            if (packet.getMessage().contains("怎么") || packet.getMessage().contains("为什么")) {
-                packet.getSubject().sendMessageAsync(
-                        packet.getSubject().uploadImage(new File(
-                                random.nextDouble() < 0.1 ? "x509/UnknownEgg.jpg" : "x509/Unknown.jpg"
-                        ))
-                );
-                event.setCancelled(true);
+            {
+                var pe = packet.getMessage();
+                if (!pe.toString().startsWith("/")) {
+                    var group = 0L;
+                    if (packet instanceof GroupMessage) group = ((GroupMessage) packet).getGroup().getId();
+                    for (var w : WordKey.allWords.values()) {
+                        if (w.group != 0) {
+                            if (w.group != group) continue;
+                        }
+                        if (w.match(pe)) {
+                            w.send(
+                                    packet.getSubject(), packet.getSender()
+                            );
+                        }
+                    }
+                }
             }
             for (Message mg : packet.getMessage()) {
                 if (mg instanceof FlashImage) {

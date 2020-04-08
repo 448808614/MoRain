@@ -13,7 +13,7 @@ import cn.mcres.karlatemp.mirai.eval.ExceptionBox;
 import cn.mcres.karlatemp.mirai.eval.NativeFunction;
 import cn.mcres.karlatemp.mxlib.tools.Toolkit;
 import cn.mcres.karlatemp.mxlib.tools.Unsafe;
-import jdk.internal.dynalink.beans.StaticClass;
+import jdk.dynalink.beans.StaticClass;
 import jdk.nashorn.internal.runtime.Undefined;
 
 import java.lang.reflect.Field;

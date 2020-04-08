@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
+@SuppressWarnings("removal")
 public class Eval {
     public static final ScriptEngine engine;
     private static final Unsafe unsafe = Unsafe.getUnsafe();
@@ -226,22 +227,22 @@ public class Eval {
                 return true;
             }
             String code = compiled.substring(5);
-
-            String value = EvalThreadingManager.process(
-                    () -> {
-                        PermissionManager.PERMISSIBLE_THREAD_LOCAL.set(permissible);
-                        return String.valueOf(invoke(code, "<eval " + event.getSender().toString() + ">", null));
-                    },
-                    4000L, TimeUnit.MILLISECONDS);
-            if (value.trim().startsWith("/自闭")) {
-                value = "不可以!";
-            }
-            try {
-                event.getSubject().sendMessageAsync(MessageCoder.coder(value, event.getSubject()));
-            } catch (Throwable e) {
-                event.getSubject().sendMessageAsync(e.toString());
-                return true;
-            }
+            AsyncExec.service.execute(() -> {
+                String value = EvalThreadingManager.process(
+                        () -> {
+                            PermissionManager.PERMISSIBLE_THREAD_LOCAL.set(permissible);
+                            return String.valueOf(invoke(code, "<eval " + event.getSender().toString() + ">", null));
+                        },
+                        4000L, TimeUnit.MILLISECONDS);
+                if (value.trim().startsWith("/自闭")) {
+                    value = "不可以!";
+                }
+                try {
+                    event.getSubject().sendMessageAsync(MessageCoder.coder(value, event.getSubject()));
+                } catch (Throwable e) {
+                    event.getSubject().sendMessageAsync(e.toString());
+                }
+            });
             return true;
         }
         return false;

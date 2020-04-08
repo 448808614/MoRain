@@ -13,10 +13,12 @@ import cn.mcres.karlatemp.mirai.command.MCommand;
 import cn.mcres.karlatemp.mirai.permission.PermissionManager;
 import cn.mcres.karlatemp.mirai.pr.listener.MemberJLListener;
 import net.mamoe.mirai.contact.Contact;
+import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.QQ;
 import net.mamoe.mirai.event.Listener;
 import net.mamoe.mirai.japt.Events;
 import net.mamoe.mirai.message.ContactMessage;
+import net.mamoe.mirai.message.FriendMessage;
 import net.mamoe.mirai.message.GroupMessage;
 import net.mamoe.mirai.message.data.MessageChain;
 
@@ -26,33 +28,44 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Message implements MCommand {
-    @Override
-    public String permission() {
-        return "command.message";
-    }
-
-    public static MessageChain wait(long group, long id) throws ExecutionException, InterruptedException {
+    public static MessageChain wait(Contact contact, QQ sender) throws ExecutionException, InterruptedException {
         long current = System.currentTimeMillis();
         AtomicReference<Listener<?>> listener = new AtomicReference<>();
         CompletableFuture<MessageChain> chain = new CompletableFuture<>();
+        boolean isGroup = contact instanceof Group;
+        var cc = contact.getId();
+        var si = sender.getId();
         listener.set(Events.subscribeAlways(ContactMessage.class, event -> {
             if (System.currentTimeMillis() - current > 60000) {
                 listener.get().complete();
                 chain.complete(null);
                 return;
             }
-            if (event instanceof GroupMessage) {
-                GroupMessage msg = (GroupMessage) event;
-                if (msg.getGroup().getId() == group) {
-                    if (msg.getSender().getId() == id) {
-                        chain.complete(msg.getMessage());
-                        listener.get().complete();
+            if (isGroup) {
+                if (event instanceof GroupMessage) {
+                    var gm = (GroupMessage) event;
+                    if (gm.getGroup().getId() == cc) {
+                        if (gm.getSender().getId() == si) {
+                            chain.complete(event.getMessage());
+                            listener.get().complete();
+                        }
                     }
+                }
+            } else if (event instanceof FriendMessage) {
+                if (si == event.getSender().getId()) {
+                    chain.complete(event.getMessage());
+                    listener.get().complete();
                 }
             }
         }));
         return chain.get();
     }
+
+    @Override
+    public String permission() {
+        return "command.message";
+    }
+
 
     @Override
     public void invoke(Contact contact, QQ sender, ContactMessage packet, LinkedList<ArgumentToken> args) throws ExecutionException, InterruptedException {
@@ -98,7 +111,7 @@ public class Message implements MCommand {
                             }
                         }
                         contact.sendMessageAsync("请发送要发送的内容....");
-                        MessageChain chain = wait(group.getGroup().getId(), group.getSender().getId());
+                        MessageChain chain = wait(group.getGroup(), group.getSender());
                         if (chain == null) {
                             contact.sendMessageAsync("超时了...");
                         } else {
