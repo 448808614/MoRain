@@ -13,9 +13,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.mamoe.mirai.console.plugins.PluginBase;
 import net.mamoe.mirai.event.internal.EventInternalJvmKt;
+import net.mamoe.mirai.message.ContactMessage;
 import net.mamoe.mirai.message.FriendMessage;
 import net.mamoe.mirai.message.GroupMessage;
-import net.mamoe.mirai.message.MessagePacket;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.RichMessage;
 
@@ -24,7 +24,6 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,20 +36,21 @@ public class BiliBiliLinker extends PluginBase {
         INSTANCE = this;
     }
 
-    public static final Collection<Predicate<MessagePacket<?, ?>>> testers = new LinkedList<>();
+    public static final Collection<Predicate<ContactMessage>> testers = new LinkedList<>();
 
-    public static boolean allow(MessagePacket<?, ?> packet) {
+    public static boolean allow(ContactMessage packet) {
         synchronized (testers) {
-            for (Predicate<MessagePacket<?, ?>> p : testers) {
+            for (Predicate<ContactMessage> p : testers) {
                 if (!p.test(packet)) return false;
             }
         }
         return true;
     }
 
-    public static void callback(ByteArrayOutputStream stream, MessagePacket<?, ?> event) throws Throwable {
-        @SuppressWarnings("deprecation") final JsonObject bin = new JsonParser()
-                .parse(stream.toString("utf8")).getAsJsonObject();
+
+    public static void callback(ByteArrayOutputStream stream, ContactMessage event) throws Throwable {
+        final JsonObject bin = JsonParser
+                .parseString(stream.toString(StandardCharsets.UTF_8)).getAsJsonObject();
         switch (bin.get("code").getAsInt()) {
             case 0: {
                 final JsonObject data = bin.get("data").getAsJsonObject();
@@ -116,8 +116,9 @@ public class BiliBiliLinker extends PluginBase {
             "^https://b23\\.tv/([0-9A-Za-z]+)(/.*|\\?.*|)$"
     );
 
-    private void handle(MessagePacket<?, ?> event) {
-        final String match = event.getMessage().toString();
+    private void handle(ContactMessage event) {
+        if (!allow(event)) return;
+        final String match = event.getMessage().contentToString();
         {
             final Matcher matcher = p1.matcher(match);
             if (matcher.find()) {
@@ -132,11 +133,17 @@ public class BiliBiliLinker extends PluginBase {
         }
     }
 
+    @SuppressWarnings("KotlinInternalInJava")
     @Override
     public void onEnable() {
         tempFolder = new File(getDataFolder(), "temp");
         ConfigurationLoader.reload();
         EventInternalJvmKt._subscribeEventForJaptOnly(GroupMessage.class, this, this::handle);
         EventInternalJvmKt._subscribeEventForJaptOnly(FriendMessage.class, this, this::handle);
+    }
+
+    @Override
+    public void onDisable() {
+        AsyncHttp.service.shutdownNow();
     }
 }
