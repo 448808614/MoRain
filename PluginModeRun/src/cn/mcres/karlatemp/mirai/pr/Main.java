@@ -86,9 +86,9 @@ public class Main extends Plugin {
         MemberJLListener.register();
         MessageSendEvent.handlers.register(event -> {
             final ContactMessage packet = event.getEvent();
-            final String string = packet.getMessage().toString().trim();
+            final String string = packet.getMessage().contentToString().trim();
             if (packet.getMessage().toString().startsWith("/")) return;
-            if (packet.getMessage().eq("jd")) {
+            if (packet.getMessage().contentToString().equals("jd")) {
                 if (PermissionManager.PERMISSIBLE_THREAD_LOCAL.get().hasPermission("banned")) {
                     packet.getSubject().sendMessageAsync("不可以!");
                     event.setCancelled(true);

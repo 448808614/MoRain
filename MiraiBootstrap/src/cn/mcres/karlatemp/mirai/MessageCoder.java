@@ -146,6 +146,7 @@ public class MessageCoder {
             if (m instanceof At) {
                 builder.append("[mirai:at=").append(((At) m).getTarget()).append(']');
             } else if (m instanceof QuoteReply) {
+            } else if (m instanceof MessageSource) {
             } else if (m instanceof Image) {
                 builder.append("[mirai:image=");
                 encode(builder, ((Image) m).getImageId());

@@ -114,11 +114,12 @@ public class WordKey implements Serializable {
     }
 
     public boolean match(MessageChain msg) {
+        var stl = msg.contentToString();
         for (var e : eq) {
-            if (msg.eq(e)) return true;
+            if (stl.equals(e)) return true;
         }
         for (var c : contains) {
-            if (msg.contains(c)) return true;
+            if (stl.contains(c)) return true;
         }
         return false;
     }
