@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 public class WordKey implements Serializable {
+    private static final long serialVersionUID = 1810648626663744907L;
     public transient String uniqueId;
     public Collection<String> eq;
     public Collection<String> contains;
@@ -113,8 +114,7 @@ public class WordKey implements Serializable {
         return this;
     }
 
-    public boolean match(MessageChain msg) {
-        var stl = msg.contentToString();
+    public boolean match(String stl) {
         for (var e : eq) {
             if (stl.equals(e)) return true;
         }

@@ -153,18 +153,20 @@ public class Main extends Plugin {
                 }
             }
             {
-                var pe = packet.getMessage();
-                if (!pe.toString().startsWith("/")) {
-                    var group = 0L;
-                    if (packet instanceof GroupMessage) group = ((GroupMessage) packet).getGroup().getId();
-                    for (var w : WordKey.allWords.values()) {
-                        if (w.group != 0) {
-                            if (w.group != group) continue;
-                        }
-                        if (w.match(pe)) {
-                            w.send(
-                                    packet.getSubject(), packet.getSender()
-                            );
+                if (!string.isEmpty()) {
+                    var first = string.charAt(0);
+                    if (first != '/' && first != '#' && first != '$' && first != '>') {
+                        var group = 0L;
+                        if (packet instanceof GroupMessage) group = ((GroupMessage) packet).getGroup().getId();
+                        for (var w : WordKey.allWords.values()) {
+                            if (w.group != 0) {
+                                if (w.group != group) continue;
+                            }
+                            if (w.match(string)) {
+                                w.send(
+                                        packet.getSubject(), packet.getSender()
+                                );
+                            }
                         }
                     }
                 }
