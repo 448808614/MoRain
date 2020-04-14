@@ -58,25 +58,25 @@ public class ConfigurationLoader {
             testers.add((X) packet -> {
                 if (packet instanceof GroupMessage)
                     return !denyGroups.contains(packet.getSubject().getId());
-                return false;
+                return true;
             });
             testers.add((X) packet -> {
                 if (packet instanceof FriendMessage)
                     return !denyFriends.contains(packet.getSubject().getId());
-                return false;
+                return true;
             });
             if (!onlyAllowsFriends.isEmpty()) {
                 testers.add((X) packet -> {
                     if (packet instanceof FriendMessage)
                         return onlyAllowsFriends.contains(packet.getSubject().getId());
-                    return false;
+                    return true;
                 });
             }
             if (!onlyAllowsGroups.isEmpty()) {
                 testers.add((X) packet -> {
                     if (packet instanceof GroupMessage)
                         return onlyAllowsGroups.contains(packet.getSubject().getId());
-                    return false;
+                    return true;
                 });
             }
         }
