@@ -62,6 +62,7 @@ public class MessageLink implements Serializable {
 
     public static class ActionPlant extends Action {
         public static final long serialVersionUID = 8647684171544548745L;
+
         private void readObject(ObjectInputStream stream) throws IOException {
             string = stream.readUTF();
         }
@@ -146,6 +147,8 @@ public class MessageLink implements Serializable {
                 if (file != null) {
                     actions.add(new ActionImage().file(file));
                 }
+            } else if (m instanceof MessageSource) {
+            } else if (m instanceof QuoteReply) {
             } else {
                 var msg = String.valueOf(m);
                 var split = "[at]";

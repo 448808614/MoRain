@@ -70,6 +70,7 @@ public class PermissionManager {
     public static PermissionBase default_;
     public static final File permissions = new File("perm.json");
     public static final ThreadLocal<Permissible> PERMISSIBLE_THREAD_LOCAL = ThreadLocal.withInitial(PermissionBase::new);
+    private static final Long ZERO = 0L;
 
     public static PermissionBase allocateUserV(long qq) {
         return users.computeIfAbsent(qq, l -> allocateUser());
@@ -183,9 +184,12 @@ public class PermissionManager {
         PermissibleLink link = new PermissibleLink();
         final PermissionBase base = users.get(qq);
         link.append(base);
-        if (isAdmin)
+        if (isAdmin) {
             link.append(qq_groups_admin.get(group));
+            link.append(qq_groups_admin.get(ZERO));
+        }
         link.append(qq_groups.get(group));
+        link.append(qq_groups.get(ZERO));
         if (base != null) {
             final String name = base.getName();
             if (name != null)

@@ -42,6 +42,7 @@ public class Main extends Plugin {
     @Override
     public void onDisable() {
         Eval.GLOBAL_OVERRIDER = null;
+        GroupSettings.cached.invalidateAll();
     }
 
     @Override
@@ -82,6 +83,8 @@ public class Main extends Plugin {
         CommandMgr.register("image", new ImageC());
         CommandMgr.register("message", new cn.mcres.karlatemp.mirai.pr.commands.Message());
         CommandMgr.register("wk", new WK());
+        CommandMgr.register("gc", new Gc());
+        CommandMgr.register("group-opt", new GroupOpt());
         TestInitialize.initialize();
         MemberJLListener.register();
         MessageSendEvent.handlers.register(event -> {
@@ -112,7 +115,17 @@ public class Main extends Plugin {
                 event.setCancelled(true);
             }
             if (PermissionManager.PERMISSIBLE_THREAD_LOCAL.get().hasPermission("banned")) return;
+            GroupSettings groupSettings;
+            if (event.getEvent() instanceof GroupMessage) {
+                groupSettings = GroupSettings.getSettings(event.getEvent().getSubject().getId());
+            } else {
+                groupSettings = null;
+            }
+            color_picker:
             {
+                if (groupSettings != null) {
+                    if (groupSettings.getBoolean("disable.color-picker")) break color_picker;
+                }
                 final java.awt.Color color = Color.match(string);
                 if (color != null) {
                     AsyncExec.service.execute(() -> {
@@ -138,21 +151,31 @@ public class Main extends Plugin {
                     event.setCancelled(true);
                 }
             }
+            bilibili_linker:
             {
-                final Matcher matcher = BiliBili.checker.matcher(string);
-                if (matcher.find()) {
-                    BiliBili.INSTANCE.invoke(packet.getSubject(), packet.getSender(), packet, BiliBili.build(matcher.group(2)));
-                    event.setCancelled(true);
+                if (groupSettings != null) {
+                    if (groupSettings.getBoolean("disable.bilibili-linker")) break bilibili_linker;
+                }
+                {
+                    final Matcher matcher = BiliBili.checker.matcher(string);
+                    if (matcher.find()) {
+                        BiliBili.INSTANCE.invoke(packet.getSubject(), packet.getSender(), packet, BiliBili.build(matcher.group(2)));
+                        event.setCancelled(true);
+                    }
+                }
+                {
+                    final Matcher matcher = BiliBili.b23.matcher(string);
+                    if (matcher.find()) {
+                        BiliBili.INSTANCE.invoke(packet.getSubject(), packet.getSender(), packet, BiliBili.build(matcher.group(1)));
+                        event.setCancelled(true);
+                    }
                 }
             }
+            word_key:
             {
-                final Matcher matcher = BiliBili.b23.matcher(string);
-                if (matcher.find()) {
-                    BiliBili.INSTANCE.invoke(packet.getSubject(), packet.getSender(), packet, BiliBili.build(matcher.group(1)));
-                    event.setCancelled(true);
+                if (groupSettings != null) {
+                    if (groupSettings.getBoolean("disable.word-key")) break word_key;
                 }
-            }
-            {
                 if (!string.isEmpty()) {
                     var first = string.charAt(0);
                     if (first != '/' && first != '#' && first != '$' && first != '>') {

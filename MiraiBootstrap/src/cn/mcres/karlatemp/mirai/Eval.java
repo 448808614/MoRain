@@ -231,7 +231,11 @@ public class Eval {
                 String value = EvalThreadingManager.process(
                         () -> {
                             PermissionManager.PERMISSIBLE_THREAD_LOCAL.set(permissible);
-                            return String.valueOf(invoke(code, "<eval " + event.getSender().toString() + ">", null));
+                            return String.valueOf(invoke(code, "<eval " + event.getSender().toString() + ">", (bindings, context) -> {
+                                if (permissible.hasPermission("magic.eval.unsafe")) {
+                                    bindings.put("contact", event.getSubject());
+                                }
+                            }));
                         },
                         4000L, TimeUnit.MILLISECONDS);
                 if (value.trim().startsWith("/自闭")) {

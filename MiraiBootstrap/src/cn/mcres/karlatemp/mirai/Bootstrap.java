@@ -182,18 +182,20 @@ public class Bootstrap {
                 return;
             }
             final MCommand command = CommandMgr.commands.get(key.substring(1));
+            Permissible permissible = PermissionManager.PERMISSIBLE_THREAD_LOCAL.get();
             if (command != null) {
-                if (PermissionManager.PERMISSIBLE_THREAD_LOCAL.get().hasPermission("banned")) {
+                if (permissible.hasPermission("banned")) {
                     event.getSubject().sendMessageAsync("大坏蛋!");
                     return;
                 }
                 final String permission = command.permission();
-                if (permission != null && !PermissionManager.PERMISSIBLE_THREAD_LOCAL.get().hasPermission(permission)) {
+                if (permission != null && !permissible.hasPermission(permission)) {
                     event.getSubject().sendMessageAsync("不可以!");
                     return;
                 }
                 AsyncExec.service.execute(() -> {
                     try {
+                        PermissionManager.PERMISSIBLE_THREAD_LOCAL.set(permissible);
                         command.invoke(event.getSubject(), event.getSender(), event, tokens);
                     } catch (Throwable dump) {
                         event.getSubject().sendMessageAsync(dump.toString());
