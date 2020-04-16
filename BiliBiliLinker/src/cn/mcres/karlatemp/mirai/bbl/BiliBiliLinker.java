@@ -50,7 +50,7 @@ public class BiliBiliLinker extends PluginBase {
 
     public static void callback(ByteArrayOutputStream stream, ContactMessage event) throws Throwable {
         final JsonObject bin = JsonParser
-                .parseString(stream.toString(StandardCharsets.UTF_8)).getAsJsonObject();
+                .parseString(stream.toString("utf8")).getAsJsonObject();
         switch (bin.get("code").getAsInt()) {
             case 0: {
                 final JsonObject data = bin.get("data").getAsJsonObject();
