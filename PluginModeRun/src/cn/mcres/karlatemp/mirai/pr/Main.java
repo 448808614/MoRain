@@ -85,13 +85,14 @@ public class Main extends Plugin {
         CommandMgr.register("wk", new WK());
         CommandMgr.register("gc", new Gc());
         CommandMgr.register("group-opt", new GroupOpt());
+        CommandMgr.register("marketing", new Marketing());
         TestInitialize.initialize();
         MemberJLListener.register();
         MessageSendEvent.handlers.register(event -> {
             final ContactMessage packet = event.getEvent();
             final String string = packet.getMessage().contentToString().trim();
-            if (packet.getMessage().toString().startsWith("/")) return;
-            if (packet.getMessage().contentToString().equals("jd")) {
+            if (string.startsWith("/")) return;
+            if (string.equals("jd")) {
                 if (PermissionManager.PERMISSIBLE_THREAD_LOCAL.get().hasPermission("banned")) {
                     packet.getSubject().sendMessageAsync("不可以!");
                     event.setCancelled(true);

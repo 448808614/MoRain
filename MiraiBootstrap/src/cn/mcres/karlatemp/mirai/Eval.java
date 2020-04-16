@@ -160,7 +160,7 @@ public class Eval {
                 String result = task.get(time, unit);
                 pool.release(context);
                 return result;
-            } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
+            } catch (InterruptedException | ExecutionException | TimeoutException any) {
                 context.thread.interrupt();
                 try {
                     Thread.sleep(500L);
@@ -169,6 +169,9 @@ public class Eval {
                     }
                 } catch (InterruptedException ignored) {
                     context.thread.stop();
+                }
+                if(any instanceof ExecutionException){
+                    any.printStackTrace();
                 }
                 return "超时啦!";
             }
