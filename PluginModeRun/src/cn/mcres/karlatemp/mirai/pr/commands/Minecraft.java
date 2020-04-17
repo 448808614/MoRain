@@ -8,6 +8,8 @@
 
 package cn.mcres.karlatemp.mirai.pr.commands;
 
+import cn.mcres.gyhhy.MXLib.yggdrasil.MojangYggdrasil;
+import cn.mcres.gyhhy.MXLib.yggdrasil.Yggdrasil;
 import cn.mcres.karlatemp.mirai.Netty;
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken;
 import cn.mcres.karlatemp.mirai.command.MCommand;
@@ -78,10 +80,7 @@ public class Minecraft implements MCommand {
                         }
                     };
                     try {
-                        final Channel channel = Netty.openChannel(address, lp);
-                        if (channel != null)
-                            MinecraftProtocolHelper.ping(channel, address.getSourceHost(), address.getSourcePort(), lp.before((result, ms, err) -> channel.close()), false);
-                    } catch (InterruptedException ignore) {
+                        MinecraftProtocolHelper.ping(Netty.group, address, lp, true);
                     } catch (Throwable any) {
                         lp.done(null, 0, any);
                     }
