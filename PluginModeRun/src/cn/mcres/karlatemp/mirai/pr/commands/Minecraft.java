@@ -19,6 +19,7 @@ import io.netty.channel.Channel;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.QQ;
 import net.mamoe.mirai.message.ContactMessage;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
@@ -65,9 +66,9 @@ public class Minecraft implements MCommand {
                             try {
                                 contact.sendMessageAsync(
                                         address + "\n"
-                                                + new TextComponent(
+                                                + ChatColor.stripColor(new TextComponent(
                                                 g.fromJson(JsonParser.parseString(byteBuf.toString(StandardCharsets.UTF_8)), Desc.class).description
-                                        ).toPlainText()
+                                        ).toPlainText())
                                 );
                             } catch (NullPointerException ignore) {
                                 contact.sendMessageAsync("服务器信息无法格式化");
