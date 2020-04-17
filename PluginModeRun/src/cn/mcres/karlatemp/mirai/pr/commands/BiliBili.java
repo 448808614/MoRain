@@ -193,6 +193,7 @@ def enc(x):
                                         buffer.append("Up>> ").append(data.get("owner").getAsJsonObject().get("name").getAsString()).append("\n");
                                         buffer.append("Aid>> ").append(data.get("aid").getAsString()).append("\n");
                                         buffer.append("Bid>> ").append(data.get("bvid").getAsString()).append("\n");
+                                        buffer.append("播放>> ").append(stat.get("view").getAsString()).append("\n");
                                         buffer.append("弹幕>> ").append(stat.get("danmaku").getAsString()).append("\n");
                                         buffer.append("评论>> ").append(stat.get("reply").getAsString()).append("\n");
                                         buffer.append("硬币>> ").append(stat.get("coin").getAsString()).append("\n");

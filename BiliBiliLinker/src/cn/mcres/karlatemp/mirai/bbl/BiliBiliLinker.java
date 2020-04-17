@@ -81,6 +81,7 @@ public class BiliBiliLinker extends PluginBase {
                 builder.add("Up>> " + data.get("owner").getAsJsonObject().get("name").getAsString() + "\n");
                 builder.add("Aid>> " + data.get("aid") + "\n");
                 builder.add("Bid>> " + data.get("bvid").getAsString() + "\n");
+                builder.add("播放>> " + stat.get("view") + "\n");
                 builder.add("弹幕>> " + stat.get("danmaku") + "\n");
                 builder.add("评论>> " + stat.get("reply") + "\n");
                 builder.add("硬币>> " + stat.get("coin") + "\n");
