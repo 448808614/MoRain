@@ -122,7 +122,15 @@ public class Logging {
                         return '[' + date + "] " + super.get(error, line, level, record);
                     }
                 }, printOut, printOut
-        ), Executors.newSingleThreadExecutor(task -> {
+        ) {
+            @Override
+            protected void writeLine(String pre, String message, boolean error) {
+                var trim = message.trim();
+                if (trim.equals("Send done: Heartbeat.Alive") || trim.equals("Event: Heartbeat.Alive.Response"))
+                    return;
+                super.writeLine(pre, message, error);
+            }
+        }, Executors.newSingleThreadExecutor(task -> {
             Thread t = new Thread(task, "Logger writer");
             t.setDaemon(true);
             return t;
