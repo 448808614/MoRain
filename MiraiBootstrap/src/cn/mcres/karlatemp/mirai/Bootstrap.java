@@ -132,6 +132,7 @@ public class Bootstrap {
                 setFirstReconnectDelayMillis(5000L);
             }
         });
+        Eval.engine.getClass().getClassLoader();
         do {
             bot.login();
             bot.join();

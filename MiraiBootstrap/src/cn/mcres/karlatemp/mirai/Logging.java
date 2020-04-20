@@ -119,6 +119,11 @@ public class Logging {
                     @Override
                     public String get(boolean error, @Nullable String line, @Nullable Level level, @Nullable LogRecord record) {
                         String date = format.format(new Date());
+                        do {
+                            int p = prln.get();
+                            if (p < 20) break;
+                            if (prln.compareAndSet(p, 19)) break;
+                        } while (true);
                         return '[' + date + "] " + super.get(error, line, level, record);
                     }
                 }, printOut, printOut
@@ -126,7 +131,7 @@ public class Logging {
             @Override
             protected void writeLine(String pre, String message, boolean error) {
                 var trim = message.trim();
-                if (trim.equals("Send done: Heartbeat.Alive") || trim.equals("Event: Heartbeat.Alive.Response"))
+                if (trim.equals("Send done: Heartbeat.Alive") || trim.equals("Event: Heartbeat.Alive.Response") || trim.equals("Packet: Heartbeat.Alive.Response"))
                     return;
                 super.writeLine(pre, message, error);
             }

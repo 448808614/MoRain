@@ -17,10 +17,12 @@ import cn.mcres.karlatemp.mxlib.network.IPAddress;
 import cn.mcres.karlatemp.mxlib.network.minecraft.MinecraftProtocolHelper;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
+import io.netty.buffer.ByteBufInputStream;
 import io.netty.channel.Channel;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.QQ;
 import net.mamoe.mirai.message.ContactMessage;
+import net.mamoe.mirai.message.data.Image;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -29,8 +31,10 @@ import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.chat.TextComponentSerializer;
 import net.md_5.bungee.chat.TranslatableComponentSerializer;
 
+import java.io.ByteArrayInputStream;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.LinkedList;
 
 public class Minecraft implements MCommand {
@@ -52,6 +56,19 @@ public class Minecraft implements MCommand {
     public static class Desc {
         @JsonAdapter(MessageSerializer.class)
         public BaseComponent[] description;
+
+        public static class Protocol {
+            public String name;
+            public int protocol;
+        }
+
+        public static class Players {
+            public long max, online;
+        }
+
+        public Protocol version;
+        public String favicon;
+        public Players players;
     }
 
     @Override
@@ -66,13 +83,36 @@ public class Minecraft implements MCommand {
                             contact.sendMessageAsync(throwable.toString());
                         } else if (byteBuf != null) {
                             try {
-                                contact.sendMessageAsync(
-                                        address + "\n"
-                                                + ChatColor.stripColor(new TextComponent(
-                                                g.fromJson(JsonParser.parseString(byteBuf.toString(StandardCharsets.UTF_8)), Desc.class).description
-                                        ).toPlainText())
-                                );
-                            } catch (NullPointerException ignore) {
+                                var desc = g.fromJson(JsonParser.parseString(byteBuf.toString(StandardCharsets.UTF_8)), Desc.class);
+                                String msg = address + "  (" + l + "ms)\n"
+                                        + desc.version.name + "(" + desc.version.protocol + ")\n"
+                                        + "Online: (" + desc.players.online + " / " + desc.players.max + ")\n"
+                                        + ChatColor.stripColor(new TextComponent(desc.description).toPlainText());
+                                {
+                                    final var favicon = desc.favicon;
+                                    if (favicon != null) {
+                                        var splitter = favicon.indexOf(',');
+                                        if (splitter > 0) {
+                                            var base64 = favicon.substring(splitter + 1);
+                                            final var decode = Base64.getDecoder().decode(base64);
+                                            Image image = null;
+                                            var counter = 3;
+                                            while (counter-- > 0) {
+                                                try {
+                                                    image = contact.uploadImage(new ByteArrayInputStream(decode));
+                                                    break;
+                                                } catch (Throwable ignore) {
+                                                }
+                                            }
+                                            if (image != null) {
+                                                contact.sendMessageAsync(image.plus(msg));
+                                                return;
+                                            }
+                                        }
+                                    }
+                                }
+                                contact.sendMessageAsync(msg);
+                            } catch (Exception ignore) {
                                 contact.sendMessageAsync("服务器信息无法格式化");
                             }
                         } else {
