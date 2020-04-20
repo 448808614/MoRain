@@ -47,6 +47,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URI;
+import java.util.BitSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -55,6 +56,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Bootstrap {
+    public static final BitSet commandPrefixes = new BitSet() {{
+        set('/', true);
+        set('#', true);
+        set('$', true);
+        set('-', true);
+        set('、', true); // What the hell??
+        set('￥', true); // ?????????
+    }};
 
     public static long getLoginQQ() {
         return LoginData.getLoginQQ();
@@ -179,7 +188,7 @@ public class Bootstrap {
         if (!tokens.isEmpty()) {
             final String key = tokens.poll().getAsString().toLowerCase();
             if (key.isEmpty()) return;
-            if (key.charAt(0) != '/') {
+            if (!commandPrefixes.get(key.charAt(0))) {
                 return;
             }
             final MCommand command = CommandMgr.commands.get(key.substring(1));
