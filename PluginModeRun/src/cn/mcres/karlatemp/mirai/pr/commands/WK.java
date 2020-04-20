@@ -16,6 +16,7 @@ import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.QQ;
 import net.mamoe.mirai.message.ContactMessage;
 import net.mamoe.mirai.message.GroupMessage;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 
@@ -32,7 +33,7 @@ public class WK implements MCommand {
     register [global/group] [wk]
      */
     @Override
-    public void invoke(Contact contact, QQ sender, ContactMessage packet, LinkedList<ArgumentToken> args) throws Exception {
+    public void invoke(@NotNull Contact contact, @NotNull QQ sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) throws Exception {
         if (args.isEmpty()) return;
         var s1 = args.poll().getAsString();
         if (args.isEmpty() && !s1.equals("list")) return;

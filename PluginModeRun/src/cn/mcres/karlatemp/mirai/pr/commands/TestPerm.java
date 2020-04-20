@@ -16,6 +16,7 @@ import cn.mcres.karlatemp.mirai.permission.PermissionManager;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.QQ;
 import net.mamoe.mirai.message.ContactMessage;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -23,7 +24,7 @@ import java.util.LinkedList;
 public class TestPerm implements MCommand {
 
     @Override
-    public void invoke(Contact contact, QQ sender, ContactMessage packet, LinkedList<ArgumentToken> args) {
+    public void invoke(@NotNull Contact contact, @NotNull QQ sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
         StringBuilder sb = new StringBuilder();
         final Permissible permissible = PermissionManager.PERMISSIBLE_THREAD_LOCAL.get();
         if (permissible instanceof PermissibleLink) {

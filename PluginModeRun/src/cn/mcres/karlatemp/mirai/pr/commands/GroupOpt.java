@@ -11,14 +11,13 @@ package cn.mcres.karlatemp.mirai.pr.commands;
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken;
 import cn.mcres.karlatemp.mirai.command.MCommand;
 import cn.mcres.karlatemp.mirai.pr.GroupSettings;
-import com.google.gson.JsonElement;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.QQ;
 import net.mamoe.mirai.message.ContactMessage;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
-import java.util.Set;
 
 public class GroupOpt implements MCommand {
     @Override
@@ -27,7 +26,7 @@ public class GroupOpt implements MCommand {
     }
 
     @Override
-    public void invoke(Contact contact, QQ sender, ContactMessage packet, LinkedList<ArgumentToken> args) throws Exception {
+    public void invoke(@NotNull Contact contact, @NotNull QQ sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) throws Exception {
         if (!(contact instanceof Group)) {
             contact.sendMessageAsync("只能在群里使用......");
             return;

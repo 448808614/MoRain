@@ -21,6 +21,7 @@ import net.mamoe.mirai.message.ContactMessage;
 import net.mamoe.mirai.message.FriendMessage;
 import net.mamoe.mirai.message.GroupMessage;
 import net.mamoe.mirai.message.data.MessageChain;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
@@ -68,7 +69,7 @@ public class Message implements MCommand {
 
 
     @Override
-    public void invoke(Contact contact, QQ sender, ContactMessage packet, LinkedList<ArgumentToken> args) throws ExecutionException, InterruptedException {
+    public void invoke(@NotNull Contact contact, @NotNull QQ sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) throws ExecutionException, InterruptedException {
         if (args.isEmpty()) return;
         if (!(packet instanceof GroupMessage)) {
             contact.sendMessageAsync("This command only use for group.");

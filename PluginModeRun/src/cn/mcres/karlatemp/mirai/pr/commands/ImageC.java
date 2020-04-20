@@ -25,6 +25,7 @@ import net.mamoe.mirai.message.GroupMessage;
 import net.mamoe.mirai.message.data.Image;
 import net.mamoe.mirai.message.data.Message;
 import net.mamoe.mirai.message.data.OnlineImage;
+import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -147,7 +148,7 @@ public class ImageC implements MCommand {
     }
 
     @Override
-    public void invoke(Contact contact, QQ sender, ContactMessage packet, LinkedList<ArgumentToken> args) {
+    public void invoke(@NotNull Contact contact, @NotNull QQ sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
         if (args.isEmpty()) return;
         switch (args.poll().getAsString()) {
             case "gray": {

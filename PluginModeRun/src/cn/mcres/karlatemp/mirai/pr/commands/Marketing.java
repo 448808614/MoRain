@@ -13,12 +13,13 @@ import cn.mcres.karlatemp.mirai.command.MCommand;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.QQ;
 import net.mamoe.mirai.message.ContactMessage;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 
 public class Marketing implements MCommand {
     @Override
-    public void invoke(Contact contact, QQ sender, ContactMessage packet, LinkedList<ArgumentToken> args) throws Exception {
+    public void invoke(@NotNull Contact contact, @NotNull QQ sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) throws Exception {
         if (args.size() < 3) {
             contact.sendMessageAsync("" +
                     "营销号生成器vUnknown:\n" +

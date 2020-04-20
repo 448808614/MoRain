@@ -15,6 +15,7 @@ import cn.mcres.karlatemp.mirai.pr.Main;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.QQ;
 import net.mamoe.mirai.message.ContactMessage;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -36,7 +37,7 @@ public class Version implements MCommand {
     );
 
     @Override
-    public void invoke(Contact contact, QQ sender, ContactMessage packet, LinkedList<ArgumentToken> args) {
+    public void invoke(@NotNull Contact contact, @NotNull QQ sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
         StringBuilder builder = new StringBuilder().append("墨雨橙 Power by Mirai.\n");
         final String[] split = pt.split(ManagementFactory.getRuntimeMXBean().getClassPath());
         for (String pt : split) {

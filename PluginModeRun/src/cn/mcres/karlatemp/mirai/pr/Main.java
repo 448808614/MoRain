@@ -204,5 +204,6 @@ public class Main extends Plugin {
                 }
             }
         });
+        KotlinInitializerKt.initialize();
     }
 }

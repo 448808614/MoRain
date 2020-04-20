@@ -8,8 +8,6 @@
 
 package cn.mcres.karlatemp.mirai.pr.commands;
 
-import cn.mcres.gyhhy.MXLib.yggdrasil.MojangYggdrasil;
-import cn.mcres.gyhhy.MXLib.yggdrasil.Yggdrasil;
 import cn.mcres.karlatemp.mirai.Netty;
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken;
 import cn.mcres.karlatemp.mirai.command.MCommand;
@@ -17,8 +15,6 @@ import cn.mcres.karlatemp.mxlib.network.IPAddress;
 import cn.mcres.karlatemp.mxlib.network.minecraft.MinecraftProtocolHelper;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.channel.Channel;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.QQ;
 import net.mamoe.mirai.message.ContactMessage;
@@ -30,6 +26,7 @@ import net.md_5.bungee.api.chat.TranslatableComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.chat.TextComponentSerializer;
 import net.md_5.bungee.chat.TranslatableComponentSerializer;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.Type;
@@ -72,7 +69,7 @@ public class Minecraft implements MCommand {
     }
 
     @Override
-    public void invoke(Contact contact, QQ sender, ContactMessage packet, LinkedList<ArgumentToken> args) {
+    public void invoke(@NotNull Contact contact, @NotNull QQ sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
         if (!args.isEmpty()) {
             switch (args.poll().getAsString()) {
                 case "server":

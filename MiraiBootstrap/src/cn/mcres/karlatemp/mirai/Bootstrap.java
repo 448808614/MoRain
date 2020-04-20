@@ -10,6 +10,7 @@ package cn.mcres.karlatemp.mirai;
 
 import cn.mcres.karlatemp.mirai.arguments.ArgumentParser;
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken;
+import cn.mcres.karlatemp.mirai.command.KotlinCommand;
 import cn.mcres.karlatemp.mirai.command.MCommand;
 import cn.mcres.karlatemp.mirai.event.MemberJoinGroupEvent;
 import cn.mcres.karlatemp.mirai.event.MemberLeaveGroupEvent;
@@ -17,10 +18,14 @@ import cn.mcres.karlatemp.mirai.event.MessageSendEvent;
 import cn.mcres.karlatemp.mirai.permission.Permissible;
 import cn.mcres.karlatemp.mirai.permission.PermissionManager;
 import cn.mcres.karlatemp.mirai.plugin.PluginManager;
+import kotlin.Unit;
 import kotlin.coroutines.Continuation;
+import kotlin.coroutines.EmptyCoroutineContext;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.BotFactoryJvm;
+import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.MemberPermission;
+import net.mamoe.mirai.contact.QQ;
 import net.mamoe.mirai.event.events.BotEvent;
 import net.mamoe.mirai.event.events.MemberJoinEvent;
 import net.mamoe.mirai.event.events.MemberLeaveEvent;
@@ -50,6 +55,7 @@ import java.net.URI;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
@@ -84,7 +90,6 @@ public class Bootstrap {
         // MiraiWSLogger.install(6765);
         Logging.install();
         Logging.creator = (logger, bot) -> logger.setLevel(Level.ALL);
-        initialize();
         // 使用自定义的配置
         final Bot bot = BotFactoryJvm.newBot(getLoginQQ(), getLoginPasswd(), new BotConfiguration() {
             {
@@ -141,6 +146,7 @@ public class Bootstrap {
                 setFirstReconnectDelayMillis(5000L);
             }
         });
+        initialize(bot);
         Eval.engine.getClass().getClassLoader();
         do {
             bot.login();
@@ -149,7 +155,12 @@ public class Bootstrap {
         } while (true);
     }
 
-    public static void accept(ContactMessage event) {
+    public static Unit accept0(ContactMessage event, Continuation<? super Unit> continuation) {
+        accept(event, continuation);
+        return Unit.INSTANCE;
+    }
+
+    public static void accept(ContactMessage event, Continuation<? super Unit> continuation) {
         if (event instanceof GroupMessage) {
             final Iterator<SingleMessage> iterator = event.getMessage().iterator();
             while (iterator.hasNext()) {
@@ -195,24 +206,33 @@ public class Bootstrap {
             Permissible permissible = PermissionManager.PERMISSIBLE_THREAD_LOCAL.get();
             if (command != null) {
                 if (permissible.hasPermission("banned")) {
-                    event.getSubject().sendMessageAsync("大坏蛋!");
+                    BotSuspendWrap.sendMessage(event.getSubject(), new PlainText("大坏蛋!"), continuation);
                     return;
                 }
                 final String permission = command.permission();
                 if (permission != null && !permissible.hasPermission(permission)) {
-                    event.getSubject().sendMessageAsync("不可以!");
+                    BotSuspendWrap.sendMessage(event.getSubject(), new PlainText("不可以!"), continuation);
                     return;
                 }
-                AsyncExec.service.execute(() -> {
-                    try {
-                        PermissionManager.PERMISSIBLE_THREAD_LOCAL.set(permissible);
-                        command.invoke(event.getSubject(), event.getSender(), event, tokens);
-                    } catch (Throwable dump) {
-                        event.getSubject().sendMessageAsync(dump.toString());
-                        Logger.getLogger("CommandLogger").log(Level.SEVERE, "Exception in executing command " + key, dump);
-                    }
+                runCatching(continuation, key, event.getSubject(), () -> {
+                    PermissionManager.PERMISSIBLE_THREAD_LOCAL.set(permissible);
+                    command.$$$$invoke$$(event.getSubject(), event.getSender(), event, tokens, key, continuation);
+                    return null;
                 });
             }
+        }
+    }
+
+    public static void runCatching(Continuation<? super Unit> continuation, String key, Contact subject, Callable<Void> runnable) {
+        try {
+            runnable.call();
+        } catch (Throwable dump) {
+            Logger.getLogger("CommandLogger").log(Level.SEVERE, "Exception in executing command " + key, dump);
+            if (continuation == null) {
+                subject.sendMessage(dump.toString());
+                return;
+            }
+            BotSuspendWrap.sendMessage(subject, new PlainText(dump.toString()), continuation);
         }
     }
 
@@ -234,15 +254,18 @@ public class Bootstrap {
         }
     }
 
-    public static void initialize() {
-        Events.subscribeAlways(GroupMessage.class, Bootstrap::accept);
-        Events.subscribeAlways(FriendMessage.class, Bootstrap::accept);
+    public static void initialize(Bot bot) {
+        KotlinCommand.Invoker.Companion.setImplements(new KotlinCommand.Invoker() {
+            @Override
+            public void invoke(@NotNull KotlinCommand kc, @NotNull Contact contact, @NotNull QQ sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args, @NotNull Continuation<? super Unit> continuation) {
+                kc.invoke0(contact, sender, packet, args, continuation);
+            }
+        });
+        BootstrapKt.initialize(bot, Bootstrap::accept0);
         Events.subscribeAlways(MemberLeaveEvent.class, event -> {
-            System.out.println("Leave " + event);
             new MemberLeaveGroupEvent(event).post();
         });
         Events.subscribeAlways(MemberJoinEvent.class, event -> {
-            System.out.println("Join " + event);
             new MemberJoinGroupEvent(event).post();
         });
         PluginManager.reload();
@@ -300,4 +323,5 @@ public class Bootstrap {
         t.setDaemon(true);
         t.start();
     }
+
 }

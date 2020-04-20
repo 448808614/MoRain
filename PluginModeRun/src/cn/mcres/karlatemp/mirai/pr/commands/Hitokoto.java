@@ -19,6 +19,7 @@ import net.mamoe.mirai.contact.QQ;
 import net.mamoe.mirai.message.ContactMessage;
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
 import org.apache.hc.core5.concurrent.FutureCallback;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
@@ -67,7 +68,7 @@ public class Hitokoto implements MCommand {
     }
 
     @Override
-    public void invoke(Contact contact, QQ sender, ContactMessage packet, LinkedList<ArgumentToken> args) {
+    public void invoke(@NotNull Contact contact, @NotNull QQ sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
         StringBuilder param = null;
         if (!args.isEmpty()) {
             param = new StringBuilder("c=" + URLEncoder.encode(args.poll().getAsString(), StandardCharsets.UTF_8));

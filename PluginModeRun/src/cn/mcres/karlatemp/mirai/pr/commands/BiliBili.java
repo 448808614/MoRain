@@ -24,6 +24,7 @@ import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.core5.concurrent.FutureCallback;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.math.BigInteger;
@@ -144,7 +145,7 @@ def enc(x):
     }
 
     @Override
-    public void invoke(Contact contact, QQ sender, ContactMessage packet, LinkedList<ArgumentToken> args) {
+    public void invoke(@NotNull Contact contact, @NotNull QQ sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
         if (args.isEmpty()) {
             contact.sendMessageAsync("" +
                     "BiliBili>\n" +
