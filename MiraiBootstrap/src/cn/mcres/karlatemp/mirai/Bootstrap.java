@@ -20,20 +20,16 @@ import cn.mcres.karlatemp.mirai.permission.PermissionManager;
 import cn.mcres.karlatemp.mirai.plugin.PluginManager;
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
-import kotlin.coroutines.EmptyCoroutineContext;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.BotFactoryJvm;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.MemberPermission;
 import net.mamoe.mirai.contact.QQ;
-import net.mamoe.mirai.event.events.BotEvent;
 import net.mamoe.mirai.event.events.MemberJoinEvent;
 import net.mamoe.mirai.event.events.MemberLeaveEvent;
 import net.mamoe.mirai.japt.Events;
 import net.mamoe.mirai.message.ContactMessage;
-import net.mamoe.mirai.message.FriendMessage;
 import net.mamoe.mirai.message.GroupMessage;
-import net.mamoe.mirai.message.MessagePacket;
 import net.mamoe.mirai.message.data.MessageSource;
 import net.mamoe.mirai.message.data.PlainText;
 import net.mamoe.mirai.message.data.QuoteReply;
@@ -206,33 +202,29 @@ public class Bootstrap {
             Permissible permissible = PermissionManager.PERMISSIBLE_THREAD_LOCAL.get();
             if (command != null) {
                 if (permissible.hasPermission("banned")) {
-                    BotSuspendWrap.sendMessage(event.getSubject(), new PlainText("大坏蛋!"), continuation);
+                    BotSuspendWrap.sendMessage(event.getSubject(), new PlainText("大坏蛋!"));
                     return;
                 }
                 final String permission = command.permission();
                 if (permission != null && !permissible.hasPermission(permission)) {
-                    BotSuspendWrap.sendMessage(event.getSubject(), new PlainText("不可以!"), continuation);
+                    BotSuspendWrap.sendMessage(event.getSubject(), new PlainText("不可以!"));
                     return;
                 }
-                runCatching(continuation, key, event.getSubject(), () -> {
+                runCatching(key, event.getSubject(), () -> {
                     PermissionManager.PERMISSIBLE_THREAD_LOCAL.set(permissible);
-                    command.$$$$invoke$$(event.getSubject(), event.getSender(), event, tokens, key, continuation);
+                    command.$$$$invoke$$(event.getSubject(), event.getSender(), event, tokens, key);
                     return null;
                 });
             }
         }
     }
 
-    public static void runCatching(Continuation<? super Unit> continuation, String key, Contact subject, Callable<Void> runnable) {
+    public static void runCatching(String key, Contact subject, Callable<Void> runnable) {
         try {
             runnable.call();
         } catch (Throwable dump) {
             Logger.getLogger("CommandLogger").log(Level.SEVERE, "Exception in executing command " + key, dump);
-            if (continuation == null) {
-                subject.sendMessage(dump.toString());
-                return;
-            }
-            BotSuspendWrap.sendMessage(subject, new PlainText(dump.toString()), continuation);
+            BotSuspendWrap.sendMessage(subject, new PlainText(dump.toString()));
         }
     }
 
@@ -247,7 +239,7 @@ public class Bootstrap {
             System.out.println("Command not found: " + line);
         } else {
             try {
-                cmd.invoke(Console.getInstance(), ConsolePacket.INSTANCE.getSender(), ConsolePacket.INSTANCE, parse);
+                cmd.$$$$invoke$$(Console.getInstance(), ConsolePacket.INSTANCE.getSender(), ConsolePacket.INSTANCE, parse, "");
             } catch (Throwable dump) {
                 Logger.getLogger("CommandLogger").log(Level.SEVERE, "Exception in executing command.", dump);
             }
@@ -275,12 +267,7 @@ public class Bootstrap {
             t.setDaemon(true);
             return t;
         });
-        Console.INSTANCE = new Console() {
-            @Override
-            protected void write(String message) {
-                System.out.println(message);
-            }
-        };
+        Console.INSTANCE = ConsoleImpl.INSTANCE;
         Thread t = new Thread(() -> {
             PermissionManager.PERMISSIBLE_THREAD_LOCAL.set(new Permissible() {
                 @Override

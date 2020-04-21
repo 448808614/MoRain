@@ -236,14 +236,12 @@ public class MemberJLListener {
 
     public static void register() {
         MemberJoinGroupEvent.handlers.register(event -> {
-            System.out.println("J " + event.packet);
             final MemberJoinEvent packet = event.packet;
             final CompiledScript script = joins.computeIfAbsent(packet.getGroup().getId(), JoinLoader);
             if (script instanceof EmptyScript) return;
             process(script, "Join/" + packet.getGroup().getId(), packet.getGroup(), packet.getMember());
         });
         MemberLeaveGroupEvent.handlers.register(event -> {
-            System.out.println("E " + event.packet);
             final MemberLeaveEvent packet = event.packet;
             final CompiledScript script = leaves.computeIfAbsent(packet.getGroup().getId(), LeaveLoader);
             if (script instanceof EmptyScript) return;

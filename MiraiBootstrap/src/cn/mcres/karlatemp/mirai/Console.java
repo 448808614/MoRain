@@ -12,6 +12,7 @@ import cn.mcres.karlatemp.mxlib.tools.Toolkit;
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
+import kotlinx.coroutines.GlobalScope;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.event.events.EventCancelledException;
@@ -71,34 +72,9 @@ public abstract class Console extends Contact {
     @NotNull
     @Override
     public CoroutineContext getCoroutineContext() {
-        throw new UnsupportedOperationException();
+        return GlobalScope.INSTANCE.getCoroutineContext();
     }
 
     protected abstract void write(String message);
 
-    @NotNull
-    @Override
-    public MessageReceipt<Contact> sendMessage(@NotNull String message) throws EventCancelledException, IllegalStateException {
-        MessageReceipt<Contact> receipt = new MessageReceipt(source, ConsolePacket.INSTANCE.getSender(), null);
-        write(message);
-        return receipt;
-    }
-
-    @NotNull
-    @Override
-    public Future<MessageReceipt<Contact>> sendMessageAsync(@NotNull String message) {
-        return new CompletedFuture<>(sendMessage(message));
-    }
-
-    @NotNull
-    @Override
-    public Future<MessageReceipt<Contact>> sendMessageAsync(@NotNull Message message) {
-        return new CompletedFuture<>(sendMessage(message));
-    }
-
-    @NotNull
-    @Override
-    public MessageReceipt<Contact> sendMessage(@NotNull Message message) throws EventCancelledException, IllegalStateException {
-        return sendMessage(message.toString());
-    }
 }

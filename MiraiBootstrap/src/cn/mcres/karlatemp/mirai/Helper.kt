@@ -15,6 +15,9 @@ import cn.mcres.karlatemp.mirai.permission.PermissionManager
 import cn.mcres.karlatemp.mirai.plugin.PluginLoaderManager
 import cn.mcres.karlatemp.mxlib.event.Event
 import cn.mcres.karlatemp.mxlib.event.HandlerList
+import com.google.gson.Gson
+import com.google.gson.stream.JsonWriter
+import java.io.StringWriter
 import java.util.jar.JarFile
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -84,3 +87,18 @@ inline fun <reified E : Event> on(crossinline handler: E.(E) -> Unit) {
 inline fun permissible(): Permissible = PermissionManager.PERMISSIBLE_THREAD_LOCAL.get()
 
 inline fun String.checkPermission() = permissible().hasPermission(this)
+
+val globalGson = Gson()
+
+inline fun Any.toJson(): String = globalGson.toJson(this)
+
+inline fun Any.toPettyJson(): String {
+    val stringWriter = StringWriter()
+    val writer = JsonWriter(stringWriter)
+    writer.isHtmlSafe = false
+    writer.serializeNulls = false
+    writer.setIndent("  ")
+    globalGson.toJson(this, this.javaClass, writer)
+    writer.close()
+    return stringWriter.toString()
+}

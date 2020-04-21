@@ -9,6 +9,7 @@
 package cn.mcres.karlatemp.mirai
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.event.subscribeAlways
@@ -30,8 +31,8 @@ interface CommandInvoker {
 
 object BotSuspendWrap {
     @JvmStatic
-    suspend fun sendMessage(contact: Contact, msg: Message) {
-        contact.sendMessage(msg)
+    fun sendMessage(contact: Contact, msg: Message) {
+        contact.launch { contact.sendMessage(msg) }
     }
 }
 

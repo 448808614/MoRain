@@ -9,13 +9,14 @@
 package cn.mcres.karlatemp.mirai.command
 
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken
+import kotlinx.coroutines.launch
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.QQ
 import net.mamoe.mirai.message.ContactMessage
 import java.util.*
 import kotlin.coroutines.Continuation
 
-open class KotlinCommand : MCommand {
+abstract class KotlinCommand : MCommand {
     open class Invoker {
         open fun invoke(kc: KotlinCommand,
                         contact: Contact,
@@ -29,12 +30,13 @@ open class KotlinCommand : MCommand {
         }
     }
 
-    override fun invoke(contact: Contact, sender: QQ, packet: ContactMessage, args: LinkedList<ArgumentToken>) = throw IllegalAccessError()
+    final override fun invoke(contact: Contact, sender: QQ, packet: ContactMessage, args: LinkedList<ArgumentToken>) = throw IllegalAccessError()
 
-    override fun `$$$$invoke$$`(contact: Contact, sender: QQ, packet: ContactMessage, args: LinkedList<ArgumentToken>, key: String?, continuation: Continuation<Unit>) {
-        Invoker.implements.invoke(this, contact, sender, packet, args, continuation)
+    final override fun `$$$$invoke$$`(contact: Contact, sender: QQ, packet: ContactMessage, args: LinkedList<ArgumentToken>, key: String) {
+        contact.launch {
+            invoke0(contact, sender, packet, args)
+        }
     }
 
-    open suspend fun invoke0(contact: Contact, sender: QQ, packet: ContactMessage, args: LinkedList<ArgumentToken>) {
-    }
+    abstract suspend fun invoke0(contact: Contact, sender: QQ, packet: ContactMessage, args: LinkedList<ArgumentToken>);
 }

@@ -112,7 +112,7 @@ public class MiraiWSLogger {
                                                 }
                                                 case 'i': {
                                                     String command = text.substring(1);
-                                                    Bootstrap.invokeCommand(command);
+                                                    // Bootstrap.invokeCommand(command);
                                                     break;
                                                 }
                                             }

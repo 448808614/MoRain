@@ -79,7 +79,6 @@ public class Main extends Plugin {
         CommandMgr.register("perm", new Perm());
         CommandMgr.register("perm-test", new TestPerm());
         CommandMgr.register("s-logging", new Logging());
-        CommandMgr.register("about", new Version());
         CommandMgr.register("image", new ImageC());
         CommandMgr.register("message", new cn.mcres.karlatemp.mirai.pr.commands.Message());
         CommandMgr.register("wk", new WK());

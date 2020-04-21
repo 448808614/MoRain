@@ -13,8 +13,6 @@ import cn.mcres.karlatemp.mirai.Bootstrap;
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken;
 import cn.mcres.karlatemp.mirai.permission.Permissible;
 import cn.mcres.karlatemp.mirai.permission.PermissionManager;
-import kotlin.Unit;
-import kotlin.coroutines.Continuation;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.QQ;
 import net.mamoe.mirai.message.ContactMessage;
@@ -38,10 +36,9 @@ public interface MCommand {
             @NotNull QQ sender,
             @NotNull ContactMessage packet,
             @NotNull LinkedList<ArgumentToken> args,
-            String key,
-            @NotNull Continuation<? super Unit> continuation) throws Exception {
+            String key) throws Exception {
         Permissible p = PermissionManager.PERMISSIBLE_THREAD_LOCAL.get();
-        AsyncExec.service.execute(() -> Bootstrap.runCatching(null, key, contact, () -> {
+        AsyncExec.service.execute(() -> Bootstrap.runCatching(key, contact, () -> {
             PermissionManager.PERMISSIBLE_THREAD_LOCAL.set(p);
             invoke(contact, sender, packet, args);
             return null;
