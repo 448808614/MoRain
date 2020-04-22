@@ -9,6 +9,7 @@
 package cn.mcres.karlatemp.mirai.pr;
 
 import cn.mcres.karlatemp.mirai.AsyncExec;
+import cn.mcres.karlatemp.mirai.AsyncExecKt;
 import cn.mcres.karlatemp.mirai.CommandMgr;
 import cn.mcres.karlatemp.mirai.Eval;
 import cn.mcres.karlatemp.mirai.event.MessageSendEvent;
@@ -18,10 +19,15 @@ import cn.mcres.karlatemp.mirai.pr.commands.*;
 import cn.mcres.karlatemp.mirai.pr.listener.MemberJLListener;
 import cn.mcres.karlatemp.mirai.pr.magic.Color;
 import jdk.nashorn.internal.objects.Global;
+import kotlin.coroutines.CoroutineContext;
+import kotlin.jvm.functions.Function2;
+import kotlinx.coroutines.CoroutineScope;
 import net.mamoe.mirai.message.ContactMessage;
 import net.mamoe.mirai.message.GroupMessage;
 import net.mamoe.mirai.message.data.Message;
 import net.mamoe.mirai.message.data.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -29,7 +35,7 @@ import java.security.SecureRandom;
 import java.util.Random;
 import java.util.regex.Matcher;
 
-public class Main extends Plugin {
+public class Main extends Plugin implements CoroutineScope {
     public static final String VERSION = "1.0.4";
 
     @Override
@@ -43,6 +49,10 @@ public class Main extends Plugin {
     public void onDisable() {
         Eval.GLOBAL_OVERRIDER = null;
         GroupSettings.cached.invalidateAll();
+        try {
+            kotlinx.coroutines.CoroutineScopeKt.cancel(this, null);
+        } catch (Throwable ignore) {
+        }
     }
 
     @Override
@@ -204,5 +214,13 @@ public class Main extends Plugin {
             }
         });
         KotlinInitializerKt.initialize();
+    }
+
+    private static final CoroutineScope context = AsyncExecKt.INSTANCE.getNewScope();
+
+    @NotNull
+    @Override
+    public CoroutineContext getCoroutineContext() {
+        return context.getCoroutineContext();
     }
 }

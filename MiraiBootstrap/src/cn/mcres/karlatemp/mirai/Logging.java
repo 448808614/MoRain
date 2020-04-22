@@ -165,6 +165,9 @@ public class Logging {
         }));
         Utils.setDefaultLogger(name -> newLogger(Logger.getLogger(name), true));
         handler.setLevel(Level.ALL);
+        Thread.setDefaultUncaughtExceptionHandler((t, e) ->
+                Logger.getLogger("Thread#" + t.getName())
+                        .log(Level.SEVERE, "An unknown error caused the thread to stop", e));
     }
 
     public static MiraiLogger newLogger(Logger logger, boolean initialize) {
