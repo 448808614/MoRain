@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 public class AsyncExec {
     private static final AtomicInteger counter = new AtomicInteger();
-    public static final ExecutorService service = Executors.newCachedThreadPool(
+    public static final ExecutorService service = Executors.newScheduledThreadPool(10,
             task -> {
                 Thread t = new Thread(task, "Async Exec#" + counter.getAndIncrement());
                 t.setDaemon(true);

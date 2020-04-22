@@ -17,8 +17,11 @@ import cn.mcres.karlatemp.mxlib.event.Event
 import cn.mcres.karlatemp.mxlib.event.HandlerList
 import com.google.gson.Gson
 import com.google.gson.stream.JsonWriter
+import net.mamoe.mirai.Bot
 import java.io.StringWriter
 import java.util.jar.JarFile
+import java.util.logging.Level
+import java.util.logging.Logger
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
@@ -102,3 +105,14 @@ inline fun Any.toPettyJson(): String {
     writer.close()
     return stringWriter.toString()
 }
+
+inline fun String.logger(): Logger = Logger.getLogger(this)
+
+inline fun Logger.export(throwable: Throwable,
+                         message: String? = "An unexpected error occurred!",
+                         level: Level = Level.SEVERE) {
+    log(level, message, throwable)
+}
+
+inline val bot: Bot
+    get() = Bootstrap.bot

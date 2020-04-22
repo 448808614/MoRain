@@ -8,6 +8,7 @@
 
 package cn.mcres.karlatemp.mirai.plugin;
 
+import cn.mcres.karlatemp.mxlib.tools.security.AccessToolkit;
 import kotlin.jvm.internal.Reflection;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
@@ -73,10 +74,25 @@ public class PluginLoaderManager {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "deprecation"})
     public static <T> T getInstance(Class<T> klass) throws IllegalAccessException, InstantiationException {
         var obj = Reflection.getOrCreateKotlinClass(klass).getObjectInstance();
-        if (obj == null) return (T) klass.newInstance();
+        if (obj == null) {
+            try {
+                var met = klass.getMethod("getInstance");
+                var result = met.invoke(null);
+                if (klass.isInstance(result)) return (T) result;
+            } catch (Exception ignore) {
+            }
+            try {
+                var field = klass.getDeclaredField("INSTANCE");
+                AccessToolkit.setAccessible(field, true);
+                var result = field.get(null);
+                if (klass.isInstance(result)) return (T) result;
+            } catch (Exception ignore) {
+            }
+            return (T) klass.newInstance();
+        }
         return (T) obj;
     }
 

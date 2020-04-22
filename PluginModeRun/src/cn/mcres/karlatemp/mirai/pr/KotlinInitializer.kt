@@ -11,6 +11,7 @@ package cn.mcres.karlatemp.mirai.pr
 import cn.mcres.karlatemp.mirai.*
 import cn.mcres.karlatemp.mirai.command.MCommand
 import cn.mcres.karlatemp.mirai.command.KCommand
+import java.lang.reflect.Modifier
 
 
 fun initialize() {
@@ -21,6 +22,11 @@ fun initialize() {
                 val kc = getAnnotation(KCommand::class.java)
                 if (kc != null) {
                     CommandMgr.register(kc.name, instance)
+                }
+            }
+            klass.extends(AutoInitializer::class.java) {
+                if (!isAnnotation && !isEnum && !isInterface && !Modifier.isAbstract(modifiers)) {
+                    instance.initialize()
                 }
             }
         }

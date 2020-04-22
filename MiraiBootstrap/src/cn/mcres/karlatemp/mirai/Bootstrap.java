@@ -18,6 +18,7 @@ import cn.mcres.karlatemp.mirai.event.MessageSendEvent;
 import cn.mcres.karlatemp.mirai.permission.Permissible;
 import cn.mcres.karlatemp.mirai.permission.PermissionManager;
 import cn.mcres.karlatemp.mirai.plugin.PluginManager;
+import cn.mcres.karlatemp.mxlib.tools.Toolkit;
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
 import net.mamoe.mirai.Bot;
@@ -58,6 +59,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Bootstrap {
+    private static final Object VOID0 = null;
+
+    @SuppressWarnings("unchecked")
+    public static <T> T VOID() {
+        return (T) VOID0;
+    }
+
+    @NotNull
+    public static final Bot bot = VOID();
+
     public static final BitSet commandPrefixes = new BitSet() {{
         set('/', true);
         set('#', true);
@@ -81,7 +92,7 @@ public class Bootstrap {
         return VERSION;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         AnsiConsole.systemInstall();
         // MiraiWSLogger.install(6765);
         Logging.install();
@@ -246,13 +257,14 @@ public class Bootstrap {
         }
     }
 
-    public static void initialize(Bot bot) {
+    public static void initialize(Bot bot) throws NoSuchFieldException {
         KotlinCommand.Invoker.Companion.setImplements(new KotlinCommand.Invoker() {
             @Override
             public void invoke(@NotNull KotlinCommand kc, @NotNull Contact contact, @NotNull QQ sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args, @NotNull Continuation<? super Unit> continuation) {
                 kc.invoke0(contact, sender, packet, args, continuation);
             }
         });
+        Toolkit.Reflection.setObjectValue(null, Bootstrap.class.getField("bot"), bot);
         BootstrapKt.initialize(bot, Bootstrap::accept0);
         Events.subscribeAlways(MemberLeaveEvent.class, event -> {
             new MemberLeaveGroupEvent(event).post();

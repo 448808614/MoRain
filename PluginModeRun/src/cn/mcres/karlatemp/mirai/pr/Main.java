@@ -18,6 +18,7 @@ import cn.mcres.karlatemp.mirai.plugin.Plugin;
 import cn.mcres.karlatemp.mirai.pr.commands.*;
 import cn.mcres.karlatemp.mirai.pr.listener.MemberJLListener;
 import cn.mcres.karlatemp.mirai.pr.magic.Color;
+import cn.mcres.karlatemp.mxlib.tools.Toolkit;
 import jdk.nashorn.internal.objects.Global;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.jvm.functions.Function2;
@@ -37,6 +38,13 @@ import java.util.regex.Matcher;
 
 public class Main extends Plugin implements CoroutineScope {
     public static final String VERSION = "1.0.4";
+    @NotNull
+    public static final Main INSTANCE = new Main();
+
+    @NotNull
+    public static Main getInstance() {
+        return INSTANCE;
+    }
 
     @Override
     public String getName() {
@@ -107,21 +115,7 @@ public class Main extends Plugin implements CoroutineScope {
                     event.setCancelled(true);
                     return;
                 }
-                packet.getSubject().sendMessageAsync("" +
-                        "Java8: https://docs.oracle.com/javase/8/docs/api/overview-summary.html\n" +
-                        "BukkitAPI - Javadoc:\n" +
-                        "    1.7.10版(已过时):https://jd.bukkit.org/\n" +
-                        "    Chinese_Bukkit: \n" +
-                        "        1.12.2版:http://docs.zoyn.top/bukkitapi/1.12.2/\n" +
-                        "        1.13+版:https://bukkit.windit.net/javadoc/\n" +
-                        "    Spigot: https://hub.spigotmc.org/javadocs/spigot/\n" +
-                        "    Paper: https://papermc.io/javadocs/paper/\n" +
-                        "    Sponge(不推荐): https://docs.spongepowered.org/stable/zh-CN/\n" +
-                        "    BungeeCord:\n" +
-                        "        API: https://ci.md-5.net/job/BungeeCord/ws/api/target/apidocs/overview-summary.html\n" +
-                        "        API-Chat: https://ci.md-5.net/job/BungeeCord/ws/chat/target/apidocs/overview-summary.html\n" +
-                        "    MCP Query: https://mcp.exz.me/"
-                );
+                packet.getSubject().sendMessageAsync(JavaDocKt.getJd());
                 event.setCancelled(true);
             }
             if (PermissionManager.PERMISSIBLE_THREAD_LOCAL.get().hasPermission("banned")) return;

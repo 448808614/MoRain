@@ -8,7 +8,6 @@
 
 package cn.mcres.karlatemp.mirai
 
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -19,8 +18,6 @@ import net.mamoe.mirai.message.ContactMessage
 import net.mamoe.mirai.message.FriendMessage
 import net.mamoe.mirai.message.GroupMessage
 import net.mamoe.mirai.message.data.Message
-import java.util.logging.Level
-import java.util.logging.Logger
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -48,7 +45,7 @@ object AsyncExecKt {
 
     @Suppress("MemberVisibilityCanBePrivate")
     val dispatcher = AsyncExec.service.asCoroutineDispatcher()
-
+    val newContext: CoroutineContext get() = dispatcher + EmptyCoroutineContext
     val newScope: CoroutineScope
-        get() = CoroutineScope(dispatcher + EmptyCoroutineContext)
+        get() = CoroutineScope(newContext)
 }
