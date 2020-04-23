@@ -32,6 +32,8 @@ public class MessageLink implements Serializable {
     }
 
     public static abstract class Action implements Serializable {
+        public static final long serialVersionUID = -9007870469836068169L;
+
         public abstract void append(Contact contact, User sender, Collection<Message> messages);
     }
 
