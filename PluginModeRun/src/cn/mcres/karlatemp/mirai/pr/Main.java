@@ -8,14 +8,12 @@
 
 package cn.mcres.karlatemp.mirai.pr;
 
-import cn.mcres.karlatemp.mirai.AsyncExec;
-import cn.mcres.karlatemp.mirai.AsyncExecKt;
-import cn.mcres.karlatemp.mirai.CommandMgr;
-import cn.mcres.karlatemp.mirai.Eval;
+import cn.mcres.karlatemp.mirai.*;
 import cn.mcres.karlatemp.mirai.event.MessageSendEvent;
 import cn.mcres.karlatemp.mirai.permission.PermissionManager;
 import cn.mcres.karlatemp.mirai.plugin.Plugin;
 import cn.mcres.karlatemp.mirai.pr.commands.*;
+import cn.mcres.karlatemp.mirai.pr.commands.Logging;
 import cn.mcres.karlatemp.mirai.pr.listener.MemberJLListener;
 import cn.mcres.karlatemp.mirai.pr.magic.Color;
 import cn.mcres.karlatemp.mxlib.tools.Toolkit;
@@ -192,7 +190,7 @@ public class Main extends Plugin implements CoroutineScope {
                 }
                 if (!string.isEmpty()) {
                     var first = string.charAt(0);
-                    if (first != '/' && first != '#' && first != '$' && first != '>') {
+                    if (!Bootstrap.commandPrefixes.get(first)) {
                         var group = 0L;
                         if (packet instanceof GroupMessage) group = ((GroupMessage) packet).getGroup().getId();
                         for (var w : WordKey.allWords.values()) {
