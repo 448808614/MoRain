@@ -15,6 +15,10 @@ public abstract class Plugin {
 
     public abstract String getName();
 
+    public abstract String getVersion();
+
+    public abstract String getDescription();
+
     public void onEnable() {
     }
 

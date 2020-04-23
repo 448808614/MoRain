@@ -51,6 +51,16 @@ public class Main extends Plugin implements CoroutineScope {
         return "Main";
     }
 
+    @Override
+    public String getVersion() {
+        return VERSION;
+    }
+
+    @Override
+    public String getDescription() {
+        return "MoRain 核心";
+    }
+
     public static final Random random = new SecureRandom();
 
     @Override

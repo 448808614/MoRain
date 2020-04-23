@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2018-2020 Karlatemp. All rights reserved.
  * @author Karlatemp <karlatemp@vip.qq.com> <https://github.com/Karlatemp>
- * @create 2020/04/21 19:08:39
+ * @create 2020/04/23 15:25:22
  *
  * MiraiPlugins/PluginModeRun/SystemInfo.kt
  */
 
-package cn.mcres.karlatemp.mirai.pr.kotlin
+package cn.mcres.karlatemp.mirai.pr.kotlin.commands
 
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken
 import cn.mcres.karlatemp.mirai.command.KCommand
@@ -32,6 +32,7 @@ object SystemInfo : KotlinCommand() {
             val result = miraiTester.matchEntire(classpath)?:continue
             builder.append("${result.groupValues[1]}: ${result.groupValues[2]}\n")
         }
+        builder.append("Kotlin: ${KotlinVersion.CURRENT}")
         contact.sendMessage(builder.toString().toMessage())
     }
 }
