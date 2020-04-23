@@ -73,6 +73,19 @@ public class Bootstrap {
         set('/', true);
         set('#', true);
         set('$', true);
+        set('`', true);
+        set('·', true);
+        set('！', true);
+        set('!', true);
+        set('%', true);
+        set('%', true);
+        set('^', true);
+        set('*', true);
+        set('+', true);
+        set('=', true);
+        set('>', true);
+        set('\\', true);
+        set('|', true);
         set('-', true);
         set('、', true); // What the hell??
         set('￥', true); // ?????????
