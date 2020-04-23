@@ -91,21 +91,6 @@ inline fun permissible(): Permissible = PermissionManager.PERMISSIBLE_THREAD_LOC
 
 inline fun String.checkPermission() = permissible().hasPermission(this)
 
-val globalGson = Gson()
-
-inline fun Any.toJson(): String = globalGson.toJson(this)
-
-inline fun Any.toPettyJson(): String {
-    val stringWriter = StringWriter()
-    val writer = JsonWriter(stringWriter)
-    writer.isHtmlSafe = false
-    writer.serializeNulls = false
-    writer.setIndent("  ")
-    globalGson.toJson(this, this.javaClass, writer)
-    writer.close()
-    return stringWriter.toString()
-}
-
 inline fun String.logger(): Logger = Logger.getLogger(this)
 
 inline fun Logger.export(throwable: Throwable,
