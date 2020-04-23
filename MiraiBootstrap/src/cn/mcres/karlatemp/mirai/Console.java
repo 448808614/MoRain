@@ -53,16 +53,6 @@ public abstract class Console extends Contact {
         return 0;
     }
 
-    @Override
-    public boolean equals(@Nullable Object o) {
-        return o == this;
-    }
-
-    @Override
-    public int hashCode() {
-        return 0;
-    }
-
     @NotNull
     @Override
     public String toString() {

@@ -11,7 +11,7 @@ package cn.mcres.karlatemp.mirai.pr.commands;
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken;
 import cn.mcres.karlatemp.mirai.command.MCommand;
 import net.mamoe.mirai.contact.Contact;
-import net.mamoe.mirai.contact.QQ;
+import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.message.ContactMessage;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,7 +42,7 @@ public class Gravatar implements MCommand {
     }
 
     @Override
-    public void invoke(@NotNull Contact contact, @NotNull QQ sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
+    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
         if (args.isEmpty()) return;
         try {
             contact.sendMessage(contact.uploadImage(new URL("https://www.gravatar.com/avatar/" + md5Hex(args.poll().getAsString()) + ".jpg?s=200")));

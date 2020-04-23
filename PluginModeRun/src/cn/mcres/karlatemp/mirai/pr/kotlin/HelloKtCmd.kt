@@ -12,14 +12,14 @@ import cn.mcres.karlatemp.mirai.arguments.ArgumentToken
 import cn.mcres.karlatemp.mirai.command.KCommand
 import cn.mcres.karlatemp.mirai.command.KotlinCommand
 import net.mamoe.mirai.contact.Contact
-import net.mamoe.mirai.contact.QQ
+import net.mamoe.mirai.contact.User
 import net.mamoe.mirai.message.ContactMessage
 import net.mamoe.mirai.message.data.PlainText
 import java.util.*
 
 @KCommand("hkt")
 object HelloKtCmd : KotlinCommand() {
-    override suspend fun invoke0(contact: Contact, sender: QQ, packet: ContactMessage, args: LinkedList<ArgumentToken>) {
+    override suspend fun invoke0(contact: Contact, sender: User, packet: ContactMessage, args: LinkedList<ArgumentToken>) {
         contact.sendMessage(PlainText("KKSK"))
     }
 }

@@ -12,7 +12,7 @@ import cn.mcres.karlatemp.mirai.pr.commands.ExtendedMessageChain;
 import cn.mcres.karlatemp.mxlib.util.RAFOutputStream;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Group;
-import net.mamoe.mirai.contact.QQ;
+import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.PlainText;
 import net.mamoe.mirai.message.data.SingleMessage;
@@ -131,7 +131,7 @@ public class WordKey implements Serializable {
         }
     }
 
-    public void send(Contact contact, QQ sender) {
+    public void send(Contact contact, User sender) {
         final MessageChain build = messages.build(contact, sender);
         if (build.getSize() == 1) {
             final SingleMessage first = build.iterator().next();

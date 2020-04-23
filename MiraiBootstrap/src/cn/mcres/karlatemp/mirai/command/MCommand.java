@@ -14,7 +14,7 @@ import cn.mcres.karlatemp.mirai.arguments.ArgumentToken;
 import cn.mcres.karlatemp.mirai.permission.Permissible;
 import cn.mcres.karlatemp.mirai.permission.PermissionManager;
 import net.mamoe.mirai.contact.Contact;
-import net.mamoe.mirai.contact.QQ;
+import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.message.ContactMessage;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,13 +27,13 @@ public interface MCommand {
 
     void invoke(
             @NotNull Contact contact,
-            @NotNull QQ sender,
+            @NotNull User sender,
             @NotNull ContactMessage packet,
             @NotNull LinkedList<ArgumentToken> args) throws Exception;
 
     default void $$$$invoke$$(
             @NotNull Contact contact,
-            @NotNull QQ sender,
+            @NotNull User sender,
             @NotNull ContactMessage packet,
             @NotNull LinkedList<ArgumentToken> args,
             String key) throws Exception {

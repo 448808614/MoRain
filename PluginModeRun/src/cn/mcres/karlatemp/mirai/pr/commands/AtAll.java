@@ -11,7 +11,7 @@ package cn.mcres.karlatemp.mirai.pr.commands;
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken;
 import cn.mcres.karlatemp.mirai.command.MCommand;
 import net.mamoe.mirai.contact.Contact;
-import net.mamoe.mirai.contact.QQ;
+import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.message.ContactMessage;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,7 +19,7 @@ import java.util.LinkedList;
 
 public class AtAll implements MCommand {
     @Override
-    public void invoke(@NotNull Contact contact, @NotNull QQ sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
+    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
         contact.sendMessageAsync(net.mamoe.mirai.message.data.AtAll.INSTANCE.plus("Message testing"));
     }
 }

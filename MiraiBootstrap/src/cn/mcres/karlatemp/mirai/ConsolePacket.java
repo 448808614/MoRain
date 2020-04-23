@@ -12,7 +12,7 @@ import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.Contact;
-import net.mamoe.mirai.contact.QQ;
+import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.data.FriendNameRemark;
 import net.mamoe.mirai.data.PreviousNameList;
 import net.mamoe.mirai.data.Profile;
@@ -28,7 +28,7 @@ import java.util.concurrent.Future;
 
 public final class ConsolePacket extends ContactMessage {
     public static final ConsolePacket INSTANCE = new ConsolePacket();
-    private static final QQ console_qq = new QQ() {
+    private static final User console_qq = new User() {
         @Override
         public long getId() {
             return 10086;
@@ -40,44 +40,16 @@ public final class ConsolePacket extends ContactMessage {
             return "Console";
         }
 
-        @Nullable
-        @Override
-        public Object queryProfile(@NotNull Continuation<? super Profile> continuation) {
-            return null;
-        }
-
-        @Nullable
-        @Override
-        public Object queryPreviousNameList(@NotNull Continuation<? super PreviousNameList> continuation) {
-            return null;
-        }
-
-        @Nullable
-        @Override
-        public Object queryRemark(@NotNull Continuation<? super FriendNameRemark> continuation) {
-            return null;
-        }
-
         @NotNull
         @Override
         public Bot getBot() {
             throw new UnsupportedOperationException();
         }
 
-        @Override
-        public boolean equals(@Nullable Object o) {
-            return o == this;
-        }
-
-        @Override
-        public int hashCode() {
-            return 0;
-        }
-
         @NotNull
         @Override
         public String toString() {
-            return "ConsoleQQ";
+            return "ConsoleUser";
         }
 
         @NotNull
@@ -125,7 +97,7 @@ public final class ConsolePacket extends ContactMessage {
 
     @NotNull
     @Override
-    public QQ getSender() {
+    public User getSender() {
         return console_qq;
     }
 
@@ -133,5 +105,16 @@ public final class ConsolePacket extends ContactMessage {
     @Override
     public Contact getSubject() {
         return Console.getInstance();
+    }
+
+    @NotNull
+    @Override
+    public String getSenderName() {
+        return "Console";
+    }
+
+    @Override
+    public int getTime() {
+        return 0;
     }
 }

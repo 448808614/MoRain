@@ -15,7 +15,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.mamoe.mirai.contact.Contact;
-import net.mamoe.mirai.contact.QQ;
+import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.message.ContactMessage;
 import net.mamoe.mirai.message.GroupMessage;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
@@ -145,7 +145,7 @@ def enc(x):
     }
 
     @Override
-    public void invoke(@NotNull Contact contact, @NotNull QQ sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
+    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
         if (args.isEmpty()) {
             contact.sendMessageAsync("" +
                     "BiliBili>\n" +

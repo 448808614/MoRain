@@ -14,7 +14,7 @@ import cn.mcres.karlatemp.mirai.permission.PermissionManager;
 import cn.mcres.karlatemp.mirai.pr.listener.MemberJLListener;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Group;
-import net.mamoe.mirai.contact.QQ;
+import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.event.Listener;
 import net.mamoe.mirai.japt.Events;
 import net.mamoe.mirai.message.ContactMessage;
@@ -29,7 +29,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Message implements MCommand {
-    public static MessageChain wait(Contact contact, QQ sender) throws ExecutionException, InterruptedException {
+    public static MessageChain wait(Contact contact, User sender) throws ExecutionException, InterruptedException {
         long current = System.currentTimeMillis();
         AtomicReference<Listener<?>> listener = new AtomicReference<>();
         CompletableFuture<MessageChain> chain = new CompletableFuture<>();
@@ -69,7 +69,7 @@ public class Message implements MCommand {
 
 
     @Override
-    public void invoke(@NotNull Contact contact, @NotNull QQ sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) throws ExecutionException, InterruptedException {
+    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) throws ExecutionException, InterruptedException {
         if (args.isEmpty()) return;
         if (!(packet instanceof GroupMessage)) {
             contact.sendMessageAsync("This command only use for group.");

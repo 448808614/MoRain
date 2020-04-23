@@ -16,7 +16,7 @@ import cn.mcres.karlatemp.mxlib.network.minecraft.MinecraftProtocolHelper;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import net.mamoe.mirai.contact.Contact;
-import net.mamoe.mirai.contact.QQ;
+import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.message.ContactMessage;
 import net.mamoe.mirai.message.data.Image;
 import net.md_5.bungee.api.ChatColor;
@@ -69,7 +69,7 @@ public class Minecraft implements MCommand {
     }
 
     @Override
-    public void invoke(@NotNull Contact contact, @NotNull QQ sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
+    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
         if (!args.isEmpty()) {
             switch (args.poll().getAsString()) {
                 case "server":

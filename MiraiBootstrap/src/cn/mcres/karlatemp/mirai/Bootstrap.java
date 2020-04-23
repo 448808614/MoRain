@@ -25,7 +25,7 @@ import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.BotFactoryJvm;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.MemberPermission;
-import net.mamoe.mirai.contact.QQ;
+import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.event.events.MemberJoinEvent;
 import net.mamoe.mirai.event.events.MemberLeaveEvent;
 import net.mamoe.mirai.japt.Events;
@@ -271,12 +271,6 @@ public class Bootstrap {
     }
 
     public static void initialize(Bot bot) throws NoSuchFieldException {
-        KotlinCommand.Invoker.Companion.setImplements(new KotlinCommand.Invoker() {
-            @Override
-            public void invoke(@NotNull KotlinCommand kc, @NotNull Contact contact, @NotNull QQ sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args, @NotNull Continuation<? super Unit> continuation) {
-                kc.invoke0(contact, sender, packet, args, continuation);
-            }
-        });
         Toolkit.Reflection.setObjectValue(null, Bootstrap.class.getField("bot"), bot);
         BootstrapKt.initialize(bot, Bootstrap::accept0);
         Events.subscribeAlways(MemberLeaveEvent.class, event -> {

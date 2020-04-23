@@ -16,7 +16,7 @@ import cn.mcres.karlatemp.mirai.command.MCommand;
 import cn.mcres.karlatemp.mirai.permission.PermissionManager;
 import kotlinx.coroutines.GlobalScope;
 import net.mamoe.mirai.contact.Contact;
-import net.mamoe.mirai.contact.QQ;
+import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.event.Listener;
 import net.mamoe.mirai.event.internal.EventInternalJvmKt;
 import net.mamoe.mirai.message.ContactMessage;
@@ -148,7 +148,7 @@ public class ImageC implements MCommand {
     }
 
     @Override
-    public void invoke(@NotNull Contact contact, @NotNull QQ sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
+    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
         if (args.isEmpty()) return;
         switch (args.poll().getAsString()) {
             case "gray": {

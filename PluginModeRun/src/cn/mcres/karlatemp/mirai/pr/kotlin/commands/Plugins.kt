@@ -13,14 +13,14 @@ import cn.mcres.karlatemp.mirai.command.KCommand
 import cn.mcres.karlatemp.mirai.command.KotlinCommand
 import cn.mcres.karlatemp.mirai.plugin.PluginLoaderManager
 import net.mamoe.mirai.contact.Contact
-import net.mamoe.mirai.contact.QQ
+import net.mamoe.mirai.contact.User
 import net.mamoe.mirai.message.ContactMessage
 import net.mamoe.mirai.message.data.toMessage
 import java.util.*
 
 @KCommand("plugins")
 object Plugins : KotlinCommand() {
-    override suspend fun invoke0(contact: Contact, sender: QQ, packet: ContactMessage, args: LinkedList<ArgumentToken>) {
+    override suspend fun invoke0(contact: Contact, sender: User, packet: ContactMessage, args: LinkedList<ArgumentToken>) {
         val plugins = PluginLoaderManager.plugins0!!
         val builder = StringBuilder()
         builder.append("已加载 ${plugins.size} 个插件")

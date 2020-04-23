@@ -11,7 +11,7 @@ package cn.mcres.karlatemp.mirai.pr;
 import cn.mcres.karlatemp.mirai.Http;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Member;
-import net.mamoe.mirai.contact.QQ;
+import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.message.data.*;
 
 import java.io.*;
@@ -32,7 +32,7 @@ public class MessageLink implements Serializable {
     }
 
     public static abstract class Action implements Serializable {
-        public abstract void append(Contact contact, QQ sender, Collection<Message> messages);
+        public abstract void append(Contact contact, User sender, Collection<Message> messages);
     }
 
     public static class ActionAtIt extends Action {
@@ -53,7 +53,7 @@ public class MessageLink implements Serializable {
         }
 
         @Override
-        public void append(Contact contact, QQ sender, Collection<Message> messages) {
+        public void append(Contact contact, User sender, Collection<Message> messages) {
             if (sender instanceof Member) {
                 messages.add(new At((Member) sender));
             }
@@ -74,7 +74,7 @@ public class MessageLink implements Serializable {
         public String string;
 
         @Override
-        public void append(Contact contact, QQ sender, Collection<Message> messages) {
+        public void append(Contact contact, User sender, Collection<Message> messages) {
             messages.add(new PlainText(string));
         }
 
@@ -97,7 +97,7 @@ public class MessageLink implements Serializable {
         }
 
         @Override
-        public void append(Contact contact, QQ sender, Collection<Message> messages) {
+        public void append(Contact contact, User sender, Collection<Message> messages) {
             int counter = 5;
             while (counter-- > 0) {
                 try {
@@ -127,7 +127,7 @@ public class MessageLink implements Serializable {
         for (Action a : actions) stream.writeObject(a);
     }
 
-    public MessageChain build(Contact contact, QQ sender) {
+    public MessageChain build(Contact contact, User sender) {
         var mg = new LinkedList<Message>();
         for (var a : actions) {
             a.append(contact, sender, mg);
