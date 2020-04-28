@@ -131,8 +131,11 @@ public class Logging {
             @Override
             protected void writeLine(String pre, String message, boolean error) {
                 var trim = message.trim();
-                if (trim.equals("Send done: Heartbeat.Alive") || trim.equals("Event: Heartbeat.Alive.Response") || trim.equals("Packet: Heartbeat.Alive.Response"))
-                    return;
+                if (trim.equals("Send done: Heartbeat.Alive") ||
+                        trim.equals("Event: Heartbeat.Alive.Response") ||
+                        trim.equals("Packet: Heartbeat.Alive.Response") ||
+                        trim.equals("Send: Heartbeat.Alive")
+                ) return;
                 super.writeLine(pre, message, error);
             }
         }, Executors.newSingleThreadExecutor(task -> {
