@@ -9,6 +9,7 @@
 package cn.mcres.karlatemp.mirai.pr
 
 import cn.mcres.karlatemp.mirai.*
+import cn.mcres.karlatemp.mirai.command.KCAlias
 import cn.mcres.karlatemp.mirai.command.MCommand
 import cn.mcres.karlatemp.mirai.command.KCommand
 import java.lang.reflect.Modifier
@@ -21,7 +22,11 @@ fun initialize() {
             klass.extends(MCommand::class.java) {
                 val kc = getAnnotation(KCommand::class.java)
                 if (kc != null) {
-                    CommandMgr.register(kc.name, instance)
+                    val inst = instance
+                    CommandMgr.register(kc.name, inst)
+                    getAnnotation(KCAlias::class.java)?.alias?.forEach {
+                        CommandMgr.register(it, inst)
+                    }
                 }
             }
             klass.extends(AutoInitializer::class.java) {

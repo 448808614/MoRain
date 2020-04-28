@@ -18,6 +18,9 @@ import cn.mcres.karlatemp.mxlib.event.HandlerList
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.ContactList
+import net.mamoe.mirai.contact.Group
+import net.mamoe.mirai.contact.nameCardOrNick
+import net.mamoe.mirai.message.data.ForwardMessageBuilder
 import net.mamoe.mirai.message.data.Message
 import java.util.jar.JarFile
 import java.util.logging.Level
@@ -144,3 +147,27 @@ suspend inline infix fun Message.sendTo(contact: Contact) {
 }
 
 inline operator fun String.get(start: Int, end: Int): String = this.substring(start, end)
+
+val standardLuckyUsers = listOf(
+        LuckyUser(3279826484, "果粒酱"),
+        LuckyUser(1838115958, "小星"),
+        LuckyUser(602723113, "莫老")
+)
+
+fun Contact.lucky(): LuckyUser {
+    if (this is Group) {
+        return this.members.random().let { LuckyUser(it.id, it.nameCardOrNick) }
+    }
+    return standardLuckyUsers.random()
+}
+
+data class LuckyUser(val qq: Long, val name: String) {
+    @ForDsl
+    infix fun asNode(builder: ForwardMessageBuilder): ForwardMessageBuilder.BuilderNode {
+        return builder.asNode0()
+    }
+
+    private fun ForwardMessageBuilder.asNode0(): ForwardMessageBuilder.BuilderNode {
+        return qq named name
+    }
+}
