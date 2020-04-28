@@ -91,7 +91,7 @@ public class Minecraft implements MCommand {
                                         var splitter = favicon.indexOf(',');
                                         if (splitter > 0) {
                                             var base64 = favicon.substring(splitter + 1);
-                                            final var decode = Base64.getDecoder().decode(base64);
+                                            final var decode = Base64.getMimeDecoder().decode(base64);
                                             Image image = null;
                                             var counter = 3;
                                             while (counter-- > 0) {
@@ -103,14 +103,16 @@ public class Minecraft implements MCommand {
                                             }
                                             if (image != null) {
                                                 contact.sendMessageAsync(image.plus(msg));
-                                                return;
+                                            } else {
+                                                contact.sendMessageAsync("Failed to upload server favicon.\n" + msg);
                                             }
+                                            return;
                                         }
                                     }
                                 }
                                 contact.sendMessageAsync(msg);
-                            } catch (Exception ignore) {
-                                contact.sendMessageAsync("服务器信息无法格式化");
+                            } catch (Exception exception) {
+                                contact.sendMessageAsync("服务器信息无法格式化: " + exception);
                             }
                         } else {
                             contact.sendMessageAsync("服务器信息获取失败");

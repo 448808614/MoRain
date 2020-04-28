@@ -15,19 +15,29 @@ import cn.mcres.karlatemp.mirai.permission.PermissionManager
 import cn.mcres.karlatemp.mirai.plugin.PluginLoaderManager
 import cn.mcres.karlatemp.mxlib.event.Event
 import cn.mcres.karlatemp.mxlib.event.HandlerList
-import com.google.gson.Gson
-import com.google.gson.stream.JsonWriter
 import net.mamoe.mirai.Bot
-import java.io.StringWriter
+import net.mamoe.mirai.contact.Contact
+import net.mamoe.mirai.contact.ContactList
+import net.mamoe.mirai.message.data.Message
 import java.util.jar.JarFile
 import java.util.logging.Level
 import java.util.logging.Logger
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
+import kotlin.reflect.KCallable
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty0
+import kotlin.reflect.KProperty1
+import kotlin.reflect.full.companionObject
+import kotlin.reflect.full.companionObjectInstance
+import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.jvm.isAccessible
 
+@DslMarker
+annotation class ForDsl
 
 inline fun <reified E : Event> handlers(): HandlerList<E> {
-    return E::class.java.handlers()
+    return E::class.handlers()
 }
 
 inline fun <reified E> E.invoke(vararg invokers: E.(E) -> Unit): E {
@@ -49,13 +59,13 @@ inline val <T> Class<T>.instance: T
     get() = PluginLoaderManager.getInstance(this)
 
 @Suppress("UNCHECKED_CAST")
-inline fun <T> Class<*>.extends(oth: Class<T>, then: Class<out T>.(Class<out T>) -> Unit): Boolean =
-        if (oth.isAssignableFrom(this)) {
-            val `out` = this as Class<out T>
-            then(`out`, `out`)
-            true
-        } else false
-
+inline fun <T> Class<*>.extends(oth: Class<T>, then: Class<out T>.(Class<out T>) -> Unit): Boolean {
+    return if (oth.isAssignableFrom(this)) {
+        val `out` = this as Class<out T>
+        then(`out`, `out`)
+        true
+    } else false
+}
 
 inline fun <reified E : ZipFile> E.forEach(action: E.(ZipEntry) -> Unit) {
     val iterator = entries()
@@ -65,22 +75,35 @@ inline fun <reified E : ZipFile> E.forEach(action: E.(ZipEntry) -> Unit) {
 
 @Suppress("UNCHECKED_CAST")
 @PublishedApi
-internal fun <E : Event> Class<E>.handlers(): HandlerList<E> {
-    return runCatching { this.getField("handlers") }.getOrElse { _ ->
-        var curr: Class<*>? = this
-        do {
-            val c = curr!!
-            if (!Event::class.java.isAssignableFrom(c)) break
-            try {
-                val field = c.getDeclaredField("handlers")
-                field.isAccessible = true
-                return@getOrElse field
-            } catch (any: Throwable) {
+internal fun <E : Event> KClass<E>.handlers(): HandlerList<E> {
+    fun KClass<*>.findProperty() = members.filter { it.name == "handlers" }.filter {
+        val result = it.returnType.classifier
+        if (result is KClass<*>) {
+            return@filter result.isSubclassOf(HandlerList::class)
+        }
+        false
+    }.takeIf { it.size == 1 }?.getOrNull(0)
+
+    fun KCallable<*>.read(instance: Any?): HandlerList<E> {
+        this.isAccessible = true
+        return when (this) {
+            is KProperty0 -> {
+                get() as HandlerList<E>
             }
-            curr = curr.superclass
-        } while (curr != null)
-        throw NoSuchFieldException()
-    }.get(null) as HandlerList<E>
+            is KProperty1<*, *> -> {
+                (this as KProperty1<Any?, HandlerList<E>>).get(instance)
+            }
+            else -> throw IllegalArgumentException("Find property $this but unknown how to get value")
+        }
+    }
+
+    val property = findProperty()
+    if (property != null) {
+        return property.read(objectInstance)
+    }
+    val comp = companionObject ?: throw IllegalStateException("No property and companion found.")
+    val cp = comp.findProperty() ?: throw IllegalStateException("No property and companion property found.")
+    return cp.read(companionObjectInstance)
 }
 
 inline fun <reified E : Event> on(crossinline handler: E.(E) -> Unit) {
@@ -101,3 +124,23 @@ inline fun Logger.export(throwable: Throwable,
 
 inline val bot: Bot
     get() = Bootstrap.bot
+
+fun <T : Contact> ContactList<T>.random(): T {
+    val s = size
+    if (s == 0) throw NoSuchElementException()
+    return iterator().get((Math.random() * s).toInt())
+}
+
+fun <T> Iterator<T>.get(counter: Int): T {
+    repeat(counter) {
+        next()
+    }
+    return next()
+}
+
+@ForDsl
+suspend inline infix fun Message.sendTo(contact: Contact) {
+    contact.sendMessage(this)
+}
+
+inline operator fun String.get(start: Int, end: Int): String = this.substring(start, end)

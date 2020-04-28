@@ -23,4 +23,5 @@ BukkitAPI - Javadoc:
         API-Chat: https://ci.md-5.net/job/BungeeCord/ws/chat/target/apidocs/overview-summary.html
     MCP Query: https://mcp.exz.me/
 Vault: https://pluginwiki.github.io/VaultAPI/
+ProtocolLib: https://ci.dmulloy2.net/job/ProtocolLib/javadoc/
 """.trim()
