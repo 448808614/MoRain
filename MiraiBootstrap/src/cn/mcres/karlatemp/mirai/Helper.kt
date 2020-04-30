@@ -118,6 +118,7 @@ inline fun permissible(): Permissible = PermissionManager.PERMISSIBLE_THREAD_LOC
 inline fun String.checkPermission() = permissible().hasPermission(this)
 
 inline fun String.logger(): Logger = Logger.getLogger(this)
+inline fun Logger.all(): Logger = also { level = Level.ALL }
 
 inline fun Logger.export(throwable: Throwable,
                          message: String? = "An unexpected error occurred!",

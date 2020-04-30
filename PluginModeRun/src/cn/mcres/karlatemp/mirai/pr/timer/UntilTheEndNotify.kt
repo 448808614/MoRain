@@ -60,10 +60,11 @@ object UntilTheEndNotify : AutoInitializer {
 
     private fun testFileExists(version: String) {
         // https://gitee.com/api/v5/repos/Karlatemp-bot/UntilTheEndReleases/contents/releases/UntilTheEnd%20v5.7.2.5-Release.jar?access_token={SEC}&ref=master
-        Http.client.execute(SimpleHttpRequest.copy(HttpGet(
-                "https://gitee.com/api/v5/repos/Karlatemp-bot/UntilTheEndReleases/contents/releases/UntilTheEnd%20v$version.jar?access_token=${
-                SecurityI.security["gitee-token"]}&ref=master"
-        )), object : FutureCallback<SimpleHttpResponse> {
+        val uri = "https://gitee.com/api/v5/repos/Karlatemp-bot/UntilTheEndReleases/contents/releases/UntilTheEnd%20v$version.jar?access_token=${
+        SecurityI.security["gitee-token"]}&ref=master"
+        Http.client.execute(SimpleHttpRequest.copy(HttpGet(uri)).also {
+            it.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36")
+        }, object : FutureCallback<SimpleHttpResponse> {
             override fun cancelled() = reconnect()
 
             override fun failed(p0: Exception) {
@@ -76,6 +77,8 @@ object UntilTheEndNotify : AutoInitializer {
                     postVersionUpdated(version)
                 } else {
                     reconnect()
+                    "UntilTheEnd Notify".logger().fine("It it not work.")
+                    "UntilTheEnd Notify".logger().fine(p0.bodyText)
                 }
             }
         })
@@ -172,6 +175,7 @@ object UntilTheEndNotify : AutoInitializer {
         callbacks.add {
             it.toMessage() sendTo bot.getGroup(1051331429L)
         }
-        callUpdate()
+        "UntilTheEnd Notify".logger().all().fine("Start up")
+        reconnect()
     }
 }
