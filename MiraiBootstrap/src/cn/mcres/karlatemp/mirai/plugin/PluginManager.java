@@ -8,6 +8,7 @@
 
 package cn.mcres.karlatemp.mirai.plugin;
 
+import cn.mcres.karlatemp.mirai.AsyncExecKt;
 import cn.mcres.karlatemp.mirai.CommandMgr;
 import cn.mcres.karlatemp.mirai.command.Reload;
 import cn.mcres.karlatemp.mirai.command.Shutdown;
@@ -49,6 +50,7 @@ public class PluginManager {
         }
         CommandMgr.commands.clear();
         registerDefaultCommands();
+        AsyncExecKt.INSTANCE.stop();
         File pl = new File("plugins");
         pl.mkdirs();
         File libs = new File("libraries");

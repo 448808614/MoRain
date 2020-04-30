@@ -10,6 +10,7 @@ package cn.mcres.karlatemp.mirai
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.Contact
@@ -18,6 +19,7 @@ import net.mamoe.mirai.message.ContactMessage
 import net.mamoe.mirai.message.FriendMessage
 import net.mamoe.mirai.message.GroupMessage
 import net.mamoe.mirai.message.data.Message
+import java.util.concurrent.ConcurrentLinkedDeque
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -42,10 +44,29 @@ fun initialize(bot: Bot, poster: EventPoster) {
 }
 
 object AsyncExecKt {
+    private val allContexts = ConcurrentLinkedDeque<CoroutineContext>()
+    private val allScopes = ConcurrentLinkedDeque<CoroutineScope>()
+    fun stop() {
+        kotlin.runCatching {
+            dispatcher.cancel()
+        }
+        allScopes.removeIf {
+            kotlin.runCatching {
+                it.cancel()
+            }
+            true
+        }
+        allContexts.removeIf {
+            kotlin.runCatching {
+                it.cancel()
+            }
+            true
+        }
+    }
 
     @Suppress("MemberVisibilityCanBePrivate")
     val dispatcher = AsyncExec.service.asCoroutineDispatcher()
-    val newContext: CoroutineContext get() = dispatcher + EmptyCoroutineContext
+    val newContext: CoroutineContext get() = (dispatcher + EmptyCoroutineContext).also { allContexts.add(it) }
     val newScope: CoroutineScope
-        get() = CoroutineScope(newContext)
+        get() = CoroutineScope(newContext).also { allScopes.add(it) }
 }
