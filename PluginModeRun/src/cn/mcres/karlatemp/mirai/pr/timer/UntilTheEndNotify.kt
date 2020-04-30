@@ -10,6 +10,7 @@ package cn.mcres.karlatemp.mirai.pr.timer
 
 import cn.mcres.karlatemp.mirai.*
 import cn.mcres.karlatemp.mirai.pr.AutoInitializer
+import cn.mcres.karlatemp.mirai.pr.SecurityI
 import cn.mcres.karlatemp.mxlib.tools.URLEncoder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -49,14 +50,40 @@ object UntilTheEndNotify : AutoInitializer {
             sys_ver = v
         }
     val callbacks = mutableListOf<suspend CoroutineScope.(String) -> Unit>()
-    private fun postVersionUpdated(latest: String, current: String) {
-        Http.client.execute(SimpleHttpRequest.copy(HttpGet(update)), object : FutureCallback<SimpleHttpResponse> {
-            override fun cancelled() {
-                scope.launch {
-                    delay(1000L * 60)
-                    callUpdate()
+
+    private fun reconnect() {
+        scope.launch {
+            delay(1000L * 60)
+            callUpdate()
+        }
+    }
+
+    private fun testFileExists(version: String) {
+        // https://gitee.com/api/v5/repos/Karlatemp-bot/UntilTheEndReleases/contents/releases/UntilTheEnd%20v5.7.2.5-Release.jar?access_token={SEC}&ref=master
+        Http.client.execute(SimpleHttpRequest.copy(HttpGet(
+                "https://gitee.com/api/v5/repos/Karlatemp-bot/UntilTheEndReleases/contents/releases/UntilTheEnd%20v$version.jar?access_token=${
+                SecurityI.security["gitee-token"]}&ref=master"
+        )), object : FutureCallback<SimpleHttpResponse> {
+            override fun cancelled() = reconnect()
+
+            override fun failed(p0: Exception) {
+                "UntilTheEnd Notify".logger().log(Level.SEVERE, "Failed to check file.", p0)
+                reconnect()
+            }
+
+            override fun completed(p0: SimpleHttpResponse) {
+                if (p0.code == 200) {
+                    postVersionUpdated(version)
+                } else {
+                    reconnect()
                 }
             }
+        })
+    }
+
+    private fun postVersionUpdated(latest: String) {
+        Http.client.execute(SimpleHttpRequest.copy(HttpGet(update)), object : FutureCallback<SimpleHttpResponse> {
+            override fun cancelled() = reconnect()
 
             override fun completed(p0: SimpleHttpResponse) {
                 if (p0.code != 200) {
@@ -109,18 +136,13 @@ object UntilTheEndNotify : AutoInitializer {
                         delay(1000L * 60)
                         callUpdate()
                     }
-                    scope.launch {
-                        callbacks.forEach { callback ->
-                            callback.invoke(this, it)
-                        }
-                        delay(5000)
-                    }
+                    reconnect()
                 }
             }
 
             override fun failed(p0: Exception) {
                 "UntilTheEnd Notify".logger().log(Level.SEVERE, "Failed to update version.", p0)
-                cancelled()
+                reconnect()
             }
 
         })
@@ -129,16 +151,18 @@ object UntilTheEndNotify : AutoInitializer {
     fun callUpdate() {
         Http.client.execute(SimpleHttpRequest.copy(HttpGet(version)), object : FutureCallback<SimpleHttpResponse> {
             override fun cancelled() {
+                reconnect()
             }
 
             override fun completed(p0: SimpleHttpResponse) {
                 val latest = p0.bodyText.trim()
                 if (systemVersion != latest) {
-                    postVersionUpdated(latest, systemVersion)
-                }
+                    testFileExists(latest)
+                } else reconnect()
             }
 
             override fun failed(p0: Exception?) {
+                reconnect()
             }
 
         })
