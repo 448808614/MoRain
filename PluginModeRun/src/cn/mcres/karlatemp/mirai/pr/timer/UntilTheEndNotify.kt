@@ -133,7 +133,12 @@ object UntilTheEndNotify : AutoInitializer {
                     it.add("============")
                     it.add("https://gitee.com/Karlatemp-bot/UntilTheEndReleases/blob/master/releases/UntilTheEnd%20v$urlEnc.jar")
                     it.add("https://github.com/UntilTheEndDev/UntilTheEndReleases/blob/master/shadow/until-the-end/UntilTheEnd%20v$urlEnc.jar")
-                }.joinToString("\n").also {
+                }.joinToString("\n").also { updateMsg ->
+                    callbacks.forEach {
+                        scope.launch {
+                            it.invoke(this, updateMsg)
+                        }
+                    }
                     systemVersion = latest
                     scope.launch {
                         delay(1000L * 60)
