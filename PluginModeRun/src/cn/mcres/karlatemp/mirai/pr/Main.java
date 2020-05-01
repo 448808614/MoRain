@@ -99,8 +99,6 @@ public class Main extends Plugin implements CoroutineScope {
         };
         CommandMgr.register("bilibili", BiliBili.INSTANCE);
         CommandMgr.register("gravatar", new Gravatar());
-        CommandMgr.register("hitokoto", new Hitokoto());
-        CommandMgr.register("mc", new Minecraft());
         CommandMgr.register("raw", new Raw());
         CommandMgr.register("perm", new Perm());
         CommandMgr.register("perm-test", new TestPerm());
@@ -108,9 +106,7 @@ public class Main extends Plugin implements CoroutineScope {
         CommandMgr.register("image", new ImageC());
         CommandMgr.register("message", new cn.mcres.karlatemp.mirai.pr.commands.Message());
         CommandMgr.register("wk", new WK());
-        CommandMgr.register("gc", new Gc());
         CommandMgr.register("group-opt", new GroupOpt());
-        CommandMgr.register("marketing", new Marketing());
         TestInitialize.initialize();
         MemberJLListener.register();
         MessageSendEvent.handlers.register(event -> {

@@ -10,6 +10,5 @@ package cn.mcres.karlatemp.mirai.command
 
 @Target(AnnotationTarget.CLASS)
 annotation class KCommand(
-        val name: String,
-        vararg val alias: String
+        val name: String
 )

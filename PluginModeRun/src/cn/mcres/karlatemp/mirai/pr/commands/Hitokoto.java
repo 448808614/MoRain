@@ -10,6 +10,8 @@ package cn.mcres.karlatemp.mirai.pr.commands;
 
 import cn.mcres.karlatemp.mirai.Http;
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken;
+import cn.mcres.karlatemp.mirai.command.KCAlias;
+import cn.mcres.karlatemp.mirai.command.KCommand;
 import cn.mcres.karlatemp.mirai.command.MCommand;
 import cn.mcres.karlatemp.mxlib.tools.URLEncoder;
 import com.google.gson.JsonObject;
@@ -28,6 +30,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.function.Consumer;
 
+@KCommand(name = "hitokoto")
+@KCAlias(alias = {"一言"})
 public class Hitokoto implements MCommand {
     public static void hitokoto(String param, Consumer<String> sender) {
         Http.hitokoto(param, new FutureCallback<SimpleHttpResponse>() {

@@ -9,6 +9,7 @@
 package cn.mcres.karlatemp.mirai.pr.commands;
 
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken;
+import cn.mcres.karlatemp.mirai.command.KCommand;
 import cn.mcres.karlatemp.mirai.command.MCommand;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.User;
@@ -17,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 
+@KCommand(name = "gc")
 public class Gc implements MCommand {
     @Override
     public String permission() {

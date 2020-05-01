@@ -10,6 +10,8 @@ package cn.mcres.karlatemp.mirai.pr.commands;
 
 import cn.mcres.karlatemp.mirai.Netty;
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken;
+import cn.mcres.karlatemp.mirai.command.KCAlias;
+import cn.mcres.karlatemp.mirai.command.KCommand;
 import cn.mcres.karlatemp.mirai.command.MCommand;
 import cn.mcres.karlatemp.mxlib.network.IPAddress;
 import cn.mcres.karlatemp.mxlib.network.minecraft.MinecraftProtocolHelper;
@@ -34,6 +36,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.LinkedList;
 
+@KCommand(name = "minecraft")
+@KCAlias(alias = "mc")
 public class Minecraft implements MCommand {
     public static final Gson g = new Gson();
 
