@@ -27,6 +27,7 @@ fun build163Music(
         title: String,
         prompt: (title: String) -> String = { "[分享] $it" },
         author: String = "<unknown>",
+        tag: String = "网易云音乐",
         tail: (title: String, author: String, jumpURL: String) -> String = { a, b, c ->
             // [分享]Release Me \nTwo Steps From Hell\nhttp://music.163.com/song/31654461\n来自: 网易云音乐
             "[分享]$a\n$b\n$c\n来自: 网易云音乐"
@@ -72,7 +73,7 @@ fun build163Music(
                 "sourceMsgId" value "0"
                 "source_icon" value ""
                 "source_url" value ""
-                "tag" value "网易云音乐"
+                "tag" value tag
                 "title" value title
             }
         }

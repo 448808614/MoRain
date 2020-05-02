@@ -42,6 +42,9 @@ public class PluginManager {
     }
 
     public static void reload() {
+        for (Plugin old : PluginLoaderManager.plugins0) {
+            old.onDisable();
+        }
         for (WeakReference<HandlerList<?>> handler : handlers()) {
             final HandlerList<?> list = handler.get();
             if (list != null) {
@@ -55,9 +58,6 @@ public class PluginManager {
         pl.mkdirs();
         File libs = new File("libraries");
         libs.mkdirs();
-        for (Plugin old : PluginLoaderManager.plugins0) {
-            old.onDisable();
-        }
         PluginLoaderManager.clear();
         for (File f : libs.listFiles()) {
             if (f.isFile()) {

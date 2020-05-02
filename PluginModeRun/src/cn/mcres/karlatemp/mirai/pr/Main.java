@@ -65,6 +65,7 @@ public class Main extends Plugin implements CoroutineScope {
     public void onDisable() {
         Eval.GLOBAL_OVERRIDER = null;
         GroupSettings.cached.invalidateAll();
+        CoreDisableEvent.INSTANCE.post();
         try {
             kotlinx.coroutines.CoroutineScopeKt.cancel(this, null);
         } catch (Throwable ignore) {
