@@ -148,7 +148,7 @@ object Rank : KotlinCommand(), AutoInitializer {
         val data = rank.ranks.entries.stream()
                 .filter { members.getOrNull(it.key) != null }
                 .sorted(Comparator.comparingInt {
-                    it.value.get()
+                    -it.value.get()
                 }).limit(10).collect(Collectors.toCollection { LinkedList<Map.Entry<Long, AtomicInteger>>() })
         if (data.isEmpty()) {
             "No data in this group.".toMessage() sendTo contact
