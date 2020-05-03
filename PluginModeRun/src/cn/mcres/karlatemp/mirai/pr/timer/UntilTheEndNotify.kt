@@ -25,13 +25,16 @@ import java.lang.Exception
 import java.util.*
 import java.util.logging.Level
 import kotlin.NoSuchElementException
+import kotlin.math.log
 
 object UntilTheEndNotify : AutoInitializer {
     val update = "https://untiltheend.coding.net/p/UntilTheEnd/d/UntilTheEnd/git/raw/master/Update.txt"
     val version = "https://untiltheend.coding.net/p/UntilTheEnd/d/UntilTheEnd/git/raw/master/UTEversion.txt"
     val scope = AsyncExecKt.newScope
-
+    var disabled = false
     private const val BEGIN = "--------------------------"
+
+    val logger = "UntilTheEnd Notify".logger()
 
     private val file = File("data/ute.txt").also {
         it.parentFile?.apply {
@@ -52,8 +55,10 @@ object UntilTheEndNotify : AutoInitializer {
     val callbacks = mutableListOf<suspend CoroutineScope.(String) -> Unit>()
 
     private fun reconnect() {
+        if (disabled) return
         scope.launch {
             delay(1000L * 60)
+            if (disabled) return@launch
             callUpdate()
         }
     }
@@ -68,7 +73,7 @@ object UntilTheEndNotify : AutoInitializer {
             override fun cancelled() = reconnect()
 
             override fun failed(p0: Exception) {
-                "UntilTheEnd Notify".logger().log(Level.SEVERE, "Failed to check file.", p0)
+                logger.log(Level.SEVERE, "Failed to check file.", p0)
                 reconnect()
             }
 
@@ -77,8 +82,8 @@ object UntilTheEndNotify : AutoInitializer {
                     postVersionUpdated(version)
                 } else {
                     reconnect()
-                    "UntilTheEnd Notify".logger().fine("It it not work.")
-                    "UntilTheEnd Notify".logger().fine(p0.bodyText)
+                    logger.fine("It it not work.")
+                    logger.fine(p0.bodyText)
                 }
             }
         })
@@ -149,7 +154,7 @@ object UntilTheEndNotify : AutoInitializer {
             }
 
             override fun failed(p0: Exception) {
-                "UntilTheEnd Notify".logger().log(Level.SEVERE, "Failed to update version.", p0)
+                logger.log(Level.SEVERE, "Failed to update version.", p0)
                 reconnect()
             }
 
@@ -164,12 +169,14 @@ object UntilTheEndNotify : AutoInitializer {
 
             override fun completed(p0: SimpleHttpResponse) {
                 val latest = p0.bodyText.trim()
+                // logger.fine("System ver $systemVersion, latest version $latest")
                 if (systemVersion != latest) {
                     testFileExists(latest)
                 } else reconnect()
             }
 
-            override fun failed(p0: Exception?) {
+            override fun failed(p0: Exception) {
+                logger.log(Level.SEVERE, "Failed to get latest version.", p0)
                 reconnect()
             }
 
@@ -180,7 +187,7 @@ object UntilTheEndNotify : AutoInitializer {
         callbacks.add {
             it.toMessage() sendTo bot.getGroup(1051331429L)
         }
-        "UntilTheEnd Notify".logger().all().fine("Start up")
+        logger.all().fine("Start up")
         reconnect()
     }
 }
