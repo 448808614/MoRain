@@ -22,6 +22,7 @@ import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.message.data.ForwardMessageBuilder
 import net.mamoe.mirai.message.data.Message
+import java.security.SecureRandom
 import java.util.jar.JarFile
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -129,6 +130,8 @@ inline fun Logger.export(throwable: Throwable,
 inline val bot: Bot
     get() = Bootstrap.bot
 
+val globalRandom = SecureRandom()
+
 fun <T : Contact> ContactList<T>.random(): T {
     val s = size
     if (s == 0) throw NoSuchElementException()
@@ -152,12 +155,19 @@ inline operator fun String.get(start: Int, end: Int): String = this.substring(st
 val standardLuckyUsers = listOf(
         LuckyUser(3279826484, "果粒酱"),
         LuckyUser(1838115958, "小星"),
-        LuckyUser(602723113, "莫老")
+        LuckyUser(602723113, "莫老"),
+        LuckyUser(1810348213, "ksqeib"),
+        LuckyUser(3390038158, "果粒橙"),
+        LuckyUser(2191023046, "贺兰星辰"),
+        LuckyUser(3053434956, "内鬼"),
+        LuckyUser(3447124995, "墨雨橙")
 )
 
 fun Contact.lucky(): LuckyUser {
-    if (this is Group) {
-        return this.members.random().let { LuckyUser(it.id, it.nameCardOrNick) }
+    if (globalRandom.nextDouble() > 0.1) {
+        if (this is Group) {
+            return this.members.random().let { LuckyUser(it.id, it.nameCardOrNick) }
+        }
     }
     return standardLuckyUsers.random()
 }
@@ -165,10 +175,8 @@ fun Contact.lucky(): LuckyUser {
 data class LuckyUser(val qq: Long, val name: String) {
     @ForDsl
     infix fun asNode(builder: ForwardMessageBuilder): ForwardMessageBuilder.BuilderNode {
-        return builder.asNode0()
-    }
-
-    private fun ForwardMessageBuilder.asNode0(): ForwardMessageBuilder.BuilderNode {
-        return qq named name
+        with(builder) {
+            return qq named name
+        }
     }
 }
