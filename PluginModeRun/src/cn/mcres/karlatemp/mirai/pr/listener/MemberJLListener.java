@@ -33,30 +33,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class MemberJLListener {
-    public static class EmptyScript extends CompiledScript {
-        public static final EmptyScript INSTANCE = new EmptyScript();
-
-        @Override
-        public Object eval() throws ScriptException {
-            return null;
-        }
-
-        @Override
-        public Object eval(Bindings bindings) throws ScriptException {
-            return null;
-        }
-
-        @Override
-        public Object eval(ScriptContext context) throws ScriptException {
-            return null;
-        }
-
-        @Override
-        public ScriptEngine getEngine() {
-            return null;
-        }
-    }
-
     public static final NativeFunction UploadImage = new NativeFunction("UploadImage") {
         @Override
         protected Object call0(Object o, Object... objects) throws Throwable {
@@ -77,6 +53,12 @@ public class MemberJLListener {
             return new At((Member) objects[0]);
         }
     };
+    public static final Map<Long, CompiledScript> joins = new ConcurrentHashMap<>(), leaves = new ConcurrentHashMap<>();
+    public static final File groupScript = new File("scripts/groups");
+    public static final NashornScriptEngine engine = (NashornScriptEngine) Eval.engine;
+    public static final Function<Long, CompiledScript>
+            JoinLoader = id -> load(id, true),
+            LeaveLoader = id -> load(id, false);
 
     public static MessageChain build(Object o) {
         if (o instanceof MessageChain) return (MessageChain) o;
@@ -95,11 +77,6 @@ public class MemberJLListener {
         }
         return null;
     }
-
-    public static final Map<Long, CompiledScript> joins = new ConcurrentHashMap<>(), leaves = new ConcurrentHashMap<>();
-    public static final Function<Long, CompiledScript>
-            JoinLoader = id -> load(id, true),
-            LeaveLoader = id -> load(id, false);
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void remove(long group, boolean isJoin) {
@@ -206,9 +183,6 @@ public class MemberJLListener {
         return EmptyScript.INSTANCE;
     }
 
-    public static final File groupScript = new File("scripts/groups");
-    public static final NashornScriptEngine engine = (NashornScriptEngine) Eval.engine;
-
     public static void process(CompiledScript script, String name, Group group, Member member) {
         if (script == null) return;
         ScriptContext context = new SimpleScriptContext();
@@ -247,5 +221,29 @@ public class MemberJLListener {
             if (script instanceof EmptyScript) return;
             process(script, "Leave/" + packet.getGroup().getId(), packet.getGroup(), packet.getMember());
         });
+    }
+
+    public static class EmptyScript extends CompiledScript {
+        public static final EmptyScript INSTANCE = new EmptyScript();
+
+        @Override
+        public Object eval() throws ScriptException {
+            return null;
+        }
+
+        @Override
+        public Object eval(Bindings bindings) throws ScriptException {
+            return null;
+        }
+
+        @Override
+        public Object eval(ScriptContext context) throws ScriptException {
+            return null;
+        }
+
+        @Override
+        public ScriptEngine getEngine() {
+            return null;
+        }
     }
 }

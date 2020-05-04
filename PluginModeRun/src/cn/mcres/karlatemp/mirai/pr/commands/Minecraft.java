@@ -41,37 +41,6 @@ import java.util.LinkedList;
 public class Minecraft implements MCommand {
     public static final Gson g = new Gson();
 
-    public static class MessageSerializer implements JsonDeserializer<BaseComponent[]> {
-        private static final Gson gson = new GsonBuilder()
-                .registerTypeAdapter(BaseComponent.class, new ComponentSerializer())
-                .registerTypeAdapter(TextComponent.class, new TextComponentSerializer())
-                .registerTypeAdapter(TranslatableComponent.class, new TranslatableComponentSerializer())
-                .create();
-
-        @Override
-        public BaseComponent[] deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return jsonElement.isJsonArray() ? gson.fromJson(jsonElement, BaseComponent[].class) : new BaseComponent[]{gson.fromJson(jsonElement, BaseComponent.class)};
-        }
-    }
-
-    public static class Desc {
-        @JsonAdapter(MessageSerializer.class)
-        public BaseComponent[] description;
-
-        public static class Protocol {
-            public String name;
-            public int protocol;
-        }
-
-        public static class Players {
-            public long max, online;
-        }
-
-        public Protocol version;
-        public String favicon;
-        public Players players;
-    }
-
     @Override
     public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
         if (!args.isEmpty()) {
@@ -129,6 +98,36 @@ public class Minecraft implements MCommand {
                     }
                     break;
             }
+        }
+    }
+
+    public static class MessageSerializer implements JsonDeserializer<BaseComponent[]> {
+        private static final Gson gson = new GsonBuilder()
+                .registerTypeAdapter(BaseComponent.class, new ComponentSerializer())
+                .registerTypeAdapter(TextComponent.class, new TextComponentSerializer())
+                .registerTypeAdapter(TranslatableComponent.class, new TranslatableComponentSerializer())
+                .create();
+
+        @Override
+        public BaseComponent[] deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            return jsonElement.isJsonArray() ? gson.fromJson(jsonElement, BaseComponent[].class) : new BaseComponent[]{gson.fromJson(jsonElement, BaseComponent.class)};
+        }
+    }
+
+    public static class Desc {
+        @JsonAdapter(MessageSerializer.class)
+        public BaseComponent[] description;
+        public Protocol version;
+        public String favicon;
+        public Players players;
+
+        public static class Protocol {
+            public String name;
+            public int protocol;
+        }
+
+        public static class Players {
+            public long max, online;
         }
     }
 }

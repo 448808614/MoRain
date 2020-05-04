@@ -16,10 +16,22 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class PermissionBase implements Permissible {
-    protected Permissible parent;
     protected final Deque<PermissionAttach> attaches;
     protected final Map<String, Boolean> permissions;
+    protected Permissible parent;
     protected Boolean allPowered;
+    protected String name;
+
+    public PermissionBase(@NotNull Deque<PermissionAttach> attaches,
+                          @NotNull Map<String, Boolean> permissions) {
+        this.attaches = attaches;
+        this.permissions = permissions;
+    }
+
+    public PermissionBase() {
+        this.attaches = new ConcurrentLinkedDeque<>();
+        permissions = new HashMap<>();
+    }
 
     public PermissionBase copyPointer() {
         return new PermissionBase(attaches, permissions);
@@ -37,17 +49,6 @@ public class PermissionBase implements Permissible {
     public PermissionBase setParent(Permissible parent) {
         this.parent = parent;
         return this;
-    }
-
-    public PermissionBase(@NotNull Deque<PermissionAttach> attaches,
-                          @NotNull Map<String, Boolean> permissions) {
-        this.attaches = attaches;
-        this.permissions = permissions;
-    }
-
-    public PermissionBase() {
-        this.attaches = new ConcurrentLinkedDeque<>();
-        permissions = new HashMap<>();
     }
 
     @NotNull
@@ -76,8 +77,6 @@ public class PermissionBase implements Permissible {
         if (parent != null) return parent.hasPermission(perm);
         return null;
     }
-
-    protected String name;
 
     @Override
     public String getName() {

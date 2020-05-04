@@ -16,27 +16,6 @@ import java.util.Collections;
 import java.util.Set;
 
 public abstract class NativeFunction implements JSObject {
-    protected String name;
-
-    @Override
-    public Object call(Object o, Object... objects) {
-        Object result;
-        try {
-            result = call0(o, objects);
-        } catch (Throwable throwable) {
-            if (throwable instanceof ExceptionBox) {
-                throw ECMAException.create(((ExceptionBox) throwable).exception, getClassName() + ".native", 4, 4);
-            }
-            throw ECMAException.create(throwable, getClassName() + ".native", 4, 4);
-        }
-        if (result instanceof ExceptionBox) {
-            throw ECMAException.create(((ExceptionBox) result).exception, getClassName() + ".native", 4, 4);
-        }
-        return result;
-    }
-
-    protected abstract Object call0(Object o, Object... objects) throws Throwable;
-
     private static final NativeFunction TO_STRING_TO_STRING = new NativeFunction((Void) null) {
         {
             this.TO_STRING = this;
@@ -52,6 +31,8 @@ public abstract class NativeFunction implements JSObject {
             return "function toString(){ [native code] }";
         }
     };
+    protected String name;
+    NativeFunction TO_STRING;
 
     NativeFunction(Void ignored) {
         TO_STRING = TO_STRING_TO_STRING;
@@ -89,7 +70,24 @@ public abstract class NativeFunction implements JSObject {
         this.name = name;
     }
 
-    NativeFunction TO_STRING;
+    @Override
+    public Object call(Object o, Object... objects) {
+        Object result;
+        try {
+            result = call0(o, objects);
+        } catch (Throwable throwable) {
+            if (throwable instanceof ExceptionBox) {
+                throw ECMAException.create(((ExceptionBox) throwable).exception, getClassName() + ".native", 4, 4);
+            }
+            throw ECMAException.create(throwable, getClassName() + ".native", 4, 4);
+        }
+        if (result instanceof ExceptionBox) {
+            throw ECMAException.create(((ExceptionBox) result).exception, getClassName() + ".native", 4, 4);
+        }
+        return result;
+    }
+
+    protected abstract Object call0(Object o, Object... objects) throws Throwable;
 
     @Override
     public Object newObject(Object... objects) {

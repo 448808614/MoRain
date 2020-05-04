@@ -8,21 +8,16 @@
 
 package cn.mcres.karlatemp.mirai;
 
-import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.User;
-import net.mamoe.mirai.data.FriendNameRemark;
-import net.mamoe.mirai.data.PreviousNameList;
-import net.mamoe.mirai.data.Profile;
 import net.mamoe.mirai.event.events.EventCancelledException;
 import net.mamoe.mirai.message.ContactMessage;
 import net.mamoe.mirai.message.MessageReceipt;
 import net.mamoe.mirai.message.data.Message;
 import net.mamoe.mirai.message.data.MessageChain;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.Future;
 

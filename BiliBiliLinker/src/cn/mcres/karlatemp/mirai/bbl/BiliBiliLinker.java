@@ -21,7 +21,6 @@ import net.mamoe.mirai.message.data.RichMessage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.function.Predicate;
@@ -29,14 +28,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class BiliBiliLinker extends PluginBase {
+    public static final Collection<Predicate<ContactMessage>> testers = new LinkedList<>();
+    private static final Pattern p1 = Pattern.compile(
+            "^https://(www\\.|)bilibili\\.com/video/([A-Za-z0-9]+)(/.*|\\?.*|)$"
+    );
+    private static final Pattern p2 = Pattern.compile(
+            "^https://b23\\.tv/([0-9A-Za-z]+)(/.*|\\?.*|)$"
+    );
     static BiliBiliLinker INSTANCE;
     static File tempFolder;
+
 
     public BiliBiliLinker() {
         INSTANCE = this;
     }
-
-    public static final Collection<Predicate<ContactMessage>> testers = new LinkedList<>();
 
     public static boolean allow(ContactMessage packet) {
         synchronized (testers) {
@@ -46,7 +51,6 @@ public class BiliBiliLinker extends PluginBase {
         }
         return true;
     }
-
 
     public static void callback(ByteArrayOutputStream stream, ContactMessage event) throws Throwable {
         final JsonObject bin = JsonParser
@@ -109,13 +113,6 @@ public class BiliBiliLinker extends PluginBase {
         }
         return "https://api.bilibili.com/x/web-interface/view?aid=" + id;
     }
-
-    private static final Pattern p1 = Pattern.compile(
-            "^https://(www\\.|)bilibili\\.com/video/([A-Za-z0-9]+)(/.*|\\?.*|)$"
-    );
-    private static final Pattern p2 = Pattern.compile(
-            "^https://b23\\.tv/([0-9A-Za-z]+)(/.*|\\?.*|)$"
-    );
 
     private void handle(ContactMessage event) {
         if (!allow(event)) return;

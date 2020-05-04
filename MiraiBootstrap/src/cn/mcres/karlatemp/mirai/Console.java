@@ -9,22 +9,14 @@
 package cn.mcres.karlatemp.mirai;
 
 import cn.mcres.karlatemp.mxlib.tools.Toolkit;
-import kotlin.Unit;
-import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlinx.coroutines.GlobalScope;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.Contact;
-import net.mamoe.mirai.event.events.EventCancelledException;
-import net.mamoe.mirai.message.MessageReceipt;
-import net.mamoe.mirai.message.data.*;
-import org.apache.hc.core5.concurrent.CompletedFuture;
+import net.mamoe.mirai.message.data.OnlineMessageSource;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
-
-import java.util.concurrent.Future;
 
 public abstract class Console extends Contact {
     static Console INSTANCE;

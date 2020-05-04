@@ -27,9 +27,9 @@ object SystemInfo : KotlinCommand() {
         val builder = StringBuilder()
         builder.append("墨雨橙 Power❤by Mirai.\n")
         val path = manager.classPath
-        val split = path.split(regex).map { it.replace('\\','/') }
-        for(classpath in split){
-            val result = miraiTester.matchEntire(classpath)?:continue
+        val split = path.split(regex).map { it.replace('\\', '/') }
+        for (classpath in split) {
+            val result = miraiTester.matchEntire(classpath) ?: continue
             builder.append("${result.groupValues[1]}: ${result.groupValues[2]}\n")
         }
         builder.append("Kotlin: ${KotlinVersion.CURRENT}")

@@ -20,12 +20,12 @@ import java.io.PrintStream;
 import java.util.LinkedList;
 
 public class Shutdown implements MCommand {
+    private long invokeTime = 0;
+
     @Override
     public String permission() {
         return "command.shutdown";
     }
-
-    private long invokeTime = 0;
 
     @Override
     public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {

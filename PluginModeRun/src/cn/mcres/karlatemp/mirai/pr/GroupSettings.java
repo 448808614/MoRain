@@ -9,7 +9,10 @@
 package cn.mcres.karlatemp.mirai.pr;
 
 import cn.mcres.karlatemp.mxlib.util.RAFOutputStream;
-import com.google.common.cache.*;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.cache.RemovalListener;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
@@ -25,8 +28,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GroupSettings {
-    public JsonObject data;
-    public final long group;
     public static final File settings = new File("group-settings");
     static final LoadingCache<Long, GroupSettings> cached =
             CacheBuilder.newBuilder()
@@ -42,6 +43,8 @@ public class GroupSettings {
                             return gs;
                         }
                     });
+    public final long group;
+    public JsonObject data;
 
     public GroupSettings(long group) {
         this.group = group;
@@ -78,14 +81,6 @@ public class GroupSettings {
         }
     }
 
-    public void save() {
-        try {
-            save(this);
-        } catch (IOException e) {
-            Logger.getLogger("GroupSettings").log(Level.SEVERE, "Failed to store " + group + ".json", e);
-        }
-    }
-
     public static GroupSettings getSettings(long group) {
         try {
             return cached.get(group);
@@ -93,6 +88,14 @@ public class GroupSettings {
             GroupSettings settings = new GroupSettings(group);
             cached.put(group, settings);
             return settings;
+        }
+    }
+
+    public void save() {
+        try {
+            save(this);
+        } catch (IOException e) {
+            Logger.getLogger("GroupSettings").log(Level.SEVERE, "Failed to store " + group + ".json", e);
         }
     }
 

@@ -13,9 +13,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -30,10 +28,6 @@ public class AsyncHttp {
         t.setDaemon(true);
         return t;
     });
-
-    public interface CallbackAction<T> {
-        void action(T val) throws Throwable;
-    }
 
     public static File download(String bv, String url) {
         BiliBiliLinker.tempFolder.mkdirs();
@@ -74,5 +68,9 @@ public class AsyncHttp {
 
     public static void run(String url, CallbackAction<ByteArrayOutputStream> action) {
         service.execute(() -> runSync(url, action, null));
+    }
+
+    public interface CallbackAction<T> {
+        void action(T val) throws Throwable;
     }
 }

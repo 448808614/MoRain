@@ -20,9 +20,7 @@ import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Random;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -33,44 +31,6 @@ public class Logging {
     public static MLoggerHandler handler;
     public static Creator creator;
     public static boolean openFileLogging = true;
-
-    public interface Creator {
-        void initialize(Logger logger, Bot bot);
-    }
-
-    public static class SyncLogging extends InlinePrintStream {
-        private final RandomAccessFile raf;
-
-        public SyncLogging(RandomAccessFile raf) {
-            this.raf = raf;
-        }
-
-        @Override
-        public synchronized void print(String s) {
-            try {
-                raf.seek(raf.length());
-                raf.write(s.getBytes(StandardCharsets.UTF_8));
-            } catch (IOException ignore) {
-            }
-        }
-
-        @Override
-        public synchronized void println() {
-            try {
-                raf.seek(raf.length());
-                raf.write('\r');
-                raf.write('\n');
-            } catch (IOException ignore) {
-            }
-
-        }
-
-        @Override
-        public synchronized void println(String x) {
-            print(x);
-            println();
-        }
-    }
 
     public synchronized static void install() {
         if (logger != null) return;
@@ -180,6 +140,7 @@ public class Logging {
         }
         return new MiraiLogger() {
             public boolean enabled = true;
+            private MiraiLogger follower;
 
             @Nullable
             @Override
@@ -191,8 +152,6 @@ public class Logging {
             public boolean isEnabled() {
                 return enabled;
             }
-
-            private MiraiLogger follower;
 
             @Nullable
             @Override
@@ -328,5 +287,43 @@ public class Logging {
         Logger logger = Logger.getLogger("bot." + bot.getSelfQQ());
         if (creator != null) creator.initialize(logger, bot);
         return newLogger(logger, false);
+    }
+
+    public interface Creator {
+        void initialize(Logger logger, Bot bot);
+    }
+
+    public static class SyncLogging extends InlinePrintStream {
+        private final RandomAccessFile raf;
+
+        public SyncLogging(RandomAccessFile raf) {
+            this.raf = raf;
+        }
+
+        @Override
+        public synchronized void print(String s) {
+            try {
+                raf.seek(raf.length());
+                raf.write(s.getBytes(StandardCharsets.UTF_8));
+            } catch (IOException ignore) {
+            }
+        }
+
+        @Override
+        public synchronized void println() {
+            try {
+                raf.seek(raf.length());
+                raf.write('\r');
+                raf.write('\n');
+            } catch (IOException ignore) {
+            }
+
+        }
+
+        @Override
+        public synchronized void println(String x) {
+            print(x);
+            println();
+        }
     }
 }

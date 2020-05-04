@@ -21,11 +21,9 @@ import org.apache.hc.client5.http.async.methods.SimpleHttpResponse
 import org.apache.hc.client5.http.classic.methods.HttpGet
 import org.apache.hc.core5.concurrent.FutureCallback
 import java.io.File
-import java.lang.Exception
 import java.util.*
 import java.util.logging.Level
 import kotlin.NoSuchElementException
-import kotlin.math.log
 
 object UntilTheEndNotify : AutoInitializer {
     val update = "https://untiltheend.coding.net/p/UntilTheEnd/d/UntilTheEnd/git/raw/master/Update.txt"

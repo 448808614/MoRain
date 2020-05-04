@@ -18,11 +18,31 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PermissionManager {
+    public static final Map<String, PermissionBase> groups = new ConcurrentHashMap<>();
+    public static final Map<Long, PermissionBase> users = new ConcurrentHashMap<>();
+    public static final Map<Long, PermissionBase> qq_groups = new ConcurrentHashMap<>();
+    public static final Map<Long, PermissionBase> qq_groups_admin = new ConcurrentHashMap<>();
+    public static final File permissions = new File("perm.json");
+    public static final ThreadLocal<Permissible> PERMISSIBLE_THREAD_LOCAL = ThreadLocal.withInitial(PermissionBase::new);
+    private static final Gson g = new GsonBuilder()
+            .disableHtmlEscaping()
+            .setPrettyPrinting()
+            .create();
+    private static final Long ZERO = 0L;
+    public static PermissionBase default_;
+
+    static {
+        try {
+            reload();
+        } catch (IOException e) {
+            Logger.getLogger("PermissionManager").log(Level.SEVERE, "Failed to load perm in initialize.", e);
+        }
+    }
+
     public static PermissionBase allocateGroup() {
         return new PermissionBase() {
             @Override
@@ -59,19 +79,6 @@ public class PermissionManager {
         };
     }
 
-    private static final Gson g = new GsonBuilder()
-            .disableHtmlEscaping()
-            .setPrettyPrinting()
-            .create();
-    public static final Map<String, PermissionBase> groups = new ConcurrentHashMap<>();
-    public static final Map<Long, PermissionBase> users = new ConcurrentHashMap<>();
-    public static final Map<Long, PermissionBase> qq_groups = new ConcurrentHashMap<>();
-    public static final Map<Long, PermissionBase> qq_groups_admin = new ConcurrentHashMap<>();
-    public static PermissionBase default_;
-    public static final File permissions = new File("perm.json");
-    public static final ThreadLocal<Permissible> PERMISSIBLE_THREAD_LOCAL = ThreadLocal.withInitial(PermissionBase::new);
-    private static final Long ZERO = 0L;
-
     public static PermissionBase allocateUserV(long qq) {
         return users.computeIfAbsent(qq, l -> allocateUser());
     }
@@ -80,13 +87,62 @@ public class PermissionManager {
         return groups.computeIfAbsent(name, name0 -> (PermissionBase) allocateGroup().setName(name0));
     }
 
-    public static class FileDesc {
-        public static class GroupDesc {
-            public long id;
-            public String name, parent;
-            public Map<String, Boolean> permissions;
+    // qq -> qq_admin_group -> qq_group -> group -> default
+    public static Permissible getPermission(long qq, long group, boolean isAdmin) {
+        PermissibleLink link = new PermissibleLink();
+        final PermissionBase base = users.get(qq);
+        link.append(base);
+        if (isAdmin) {
+            link.append(qq_groups_admin.get(group));
+            link.append(qq_groups_admin.get(ZERO));
         }
+        link.append(qq_groups.get(group));
+        link.append(qq_groups.get(ZERO));
+        if (base != null) {
+            final String name = base.getName();
+            if (name != null)
+                link.append(groups.get(name));
+        }
+        link.append(default_);
+        return link;
+    }
 
+    public static Permissible getPermission(long qq) {
+        PermissibleLink link = new PermissibleLink();
+        final PermissionBase base = users.get(qq);
+        link.append(base);
+        if (base != null) {
+            final String name = base.getName();
+            if (name != null)
+                link.append(groups.get(name));
+        }
+        link.append(default_);
+        return link;
+    }
+
+    public static void save() throws IOException {
+        try (OutputStream stream = new FileOutputStream(permissions)) {
+            try (Writer writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8)) {
+                g.toJson(new FileDesc().from(
+                        groups, users, qq_groups, qq_groups_admin
+                ), writer);
+            }
+        }
+    }
+
+    public static void reload() throws IOException {
+        if (permissions.isFile())
+            try (InputStream stream = new FileInputStream(permissions)) {
+                try (Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+                    g.fromJson(reader, FileDesc.class).to(
+                            groups, users, qq_groups, qq_groups_admin
+                    );
+                    default_ = groups.get("default");
+                }
+            }
+    }
+
+    public static class FileDesc {
         public List<GroupDesc> groups, users, qq_groups, qq_groups_admin;
 
         public void to(Map<String, PermissionBase> groups,
@@ -177,68 +233,11 @@ public class PermissionManager {
             }, Collection::addAll);
             return this;
         }
-    }
 
-    // qq -> qq_admin_group -> qq_group -> group -> default
-    public static Permissible getPermission(long qq, long group, boolean isAdmin) {
-        PermissibleLink link = new PermissibleLink();
-        final PermissionBase base = users.get(qq);
-        link.append(base);
-        if (isAdmin) {
-            link.append(qq_groups_admin.get(group));
-            link.append(qq_groups_admin.get(ZERO));
-        }
-        link.append(qq_groups.get(group));
-        link.append(qq_groups.get(ZERO));
-        if (base != null) {
-            final String name = base.getName();
-            if (name != null)
-                link.append(groups.get(name));
-        }
-        link.append(default_);
-        return link;
-    }
-
-    public static Permissible getPermission(long qq) {
-        PermissibleLink link = new PermissibleLink();
-        final PermissionBase base = users.get(qq);
-        link.append(base);
-        if (base != null) {
-            final String name = base.getName();
-            if (name != null)
-                link.append(groups.get(name));
-        }
-        link.append(default_);
-        return link;
-    }
-
-    public static void save() throws IOException {
-        try (OutputStream stream = new FileOutputStream(permissions)) {
-            try (Writer writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8)) {
-                g.toJson(new FileDesc().from(
-                        groups, users, qq_groups, qq_groups_admin
-                ), writer);
-            }
-        }
-    }
-
-    public static void reload() throws IOException {
-        if (permissions.isFile())
-            try (InputStream stream = new FileInputStream(permissions)) {
-                try (Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
-                    g.fromJson(reader, FileDesc.class).to(
-                            groups, users, qq_groups, qq_groups_admin
-                    );
-                    default_ = groups.get("default");
-                }
-            }
-    }
-
-    static {
-        try {
-            reload();
-        } catch (IOException e) {
-            Logger.getLogger("PermissionManager").log(Level.SEVERE, "Failed to load perm in initialize.", e);
+        public static class GroupDesc {
+            public long id;
+            public String name, parent;
+            public Map<String, Boolean> permissions;
         }
     }
 }

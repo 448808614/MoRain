@@ -28,16 +28,11 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 public class WordKey implements Serializable {
-    private static final long serialVersionUID = 1810648626663744907L;
-    public transient String uniqueId;
-    public Collection<String> eq;
-    public Collection<String> contains;
-    public MessageLink messages;
-    public long group;
     public static final Map<String, WordKey> allWords = new ConcurrentHashMap<>();
     public static final File words = new File("words");
     public static final WordKey UNLOADED;
     public static final Logger LOGGER = Logger.getLogger("WordKey");
+    private static final long serialVersionUID = 1810648626663744907L;
 
     static {
         var l = UNLOADED = new WordKey();
@@ -57,6 +52,26 @@ public class WordKey implements Serializable {
                     allocate(mt.group(1)).load();
                 }
             }
+    }
+
+    public transient String uniqueId;
+    public Collection<String> eq;
+    public Collection<String> contains;
+    public MessageLink messages;
+    public long group;
+
+    @NotNull
+    public static WordKey allocateV(@NotNull String name) {
+        final WordKey wordKey = allWords.get(name);
+        if (wordKey != null) return wordKey;
+        return UNLOADED;
+    }
+
+    @NotNull
+    public static WordKey allocate(@NotNull String name) {
+        var we = allocateV(name);
+        if (we == UNLOADED) return new WordKey().register(name).load();
+        return we;
     }
 
     public WordKey load() {
@@ -87,20 +102,6 @@ public class WordKey implements Serializable {
                 LOGGER.log(Level.SEVERE, "Error in saving " + uniqueId, e);
             }
         }
-    }
-
-    @NotNull
-    public static WordKey allocateV(@NotNull String name) {
-        final WordKey wordKey = allWords.get(name);
-        if (wordKey != null) return wordKey;
-        return UNLOADED;
-    }
-
-    @NotNull
-    public static WordKey allocate(@NotNull String name) {
-        var we = allocateV(name);
-        if (we == UNLOADED) return new WordKey().register(name).load();
-        return we;
     }
 
     private WordKey register(String name) {

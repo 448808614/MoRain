@@ -8,12 +8,10 @@
 
 package cn.mcres.karlatemp.mirai.bbl;
 
-import net.mamoe.mirai.console.plugins.Config;
 import net.mamoe.mirai.console.plugins.YamlConfig;
 import net.mamoe.mirai.message.ContactMessage;
 import net.mamoe.mirai.message.FriendMessage;
 import net.mamoe.mirai.message.GroupMessage;
-import net.mamoe.mirai.message.MessagePacket;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,9 +22,6 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class ConfigurationLoader {
-    private interface X extends Predicate<ContactMessage> {
-    }
-
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     public static void reload() {
         final Collection<Predicate<ContactMessage>> testers = BiliBiliLinker.testers;
@@ -80,5 +75,8 @@ public class ConfigurationLoader {
                 });
             }
         }
+    }
+
+    private interface X extends Predicate<ContactMessage> {
     }
 }

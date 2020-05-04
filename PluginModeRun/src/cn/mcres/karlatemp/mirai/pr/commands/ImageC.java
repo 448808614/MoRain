@@ -147,25 +147,6 @@ public class ImageC implements MCommand {
         };
     }
 
-    @Override
-    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
-        if (args.isEmpty()) return;
-        switch (args.poll().getAsString()) {
-            case "gray": {
-                waitImage(args, packet, runProcessing(contact, ImageC::toDark));
-                break;
-            }
-            case "gb": {
-                if (!PermissionManager.PERMISSIBLE_THREAD_LOCAL.get().hasPermission("command.image.gb")) {
-                    contact.sendMessageAsync("不可以!");
-                    return;
-                }
-                waitImage(args, packet, runProcessing(contact, image -> GaussianBlur(image, 16, AsyncExec.service, 50)));
-                break;
-            }
-        }
-    }
-
     public static BufferedImage GaussianBlur(BufferedImage image) {
         return GaussianBlur(image, 20, AsyncExec.service, 10);
     }
@@ -234,5 +215,24 @@ public class ImageC implements MCommand {
             }
         }
         return bi;
+    }
+
+    @Override
+    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
+        if (args.isEmpty()) return;
+        switch (args.poll().getAsString()) {
+            case "gray": {
+                waitImage(args, packet, runProcessing(contact, ImageC::toDark));
+                break;
+            }
+            case "gb": {
+                if (!PermissionManager.PERMISSIBLE_THREAD_LOCAL.get().hasPermission("command.image.gb")) {
+                    contact.sendMessageAsync("不可以!");
+                    return;
+                }
+                waitImage(args, packet, runProcessing(contact, image -> GaussianBlur(image, 16, AsyncExec.service, 50)));
+                break;
+            }
+        }
     }
 }

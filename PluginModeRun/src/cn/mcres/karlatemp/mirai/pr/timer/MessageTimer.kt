@@ -18,7 +18,6 @@ import net.mamoe.mirai.message.data.toMessage
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
-import java.time.temporal.TemporalUnit
 
 object MessageTimer : AutoInitializer {
     object OffsetClock : Clock() {

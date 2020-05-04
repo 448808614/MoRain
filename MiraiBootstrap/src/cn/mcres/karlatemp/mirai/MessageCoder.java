@@ -10,12 +10,9 @@ package cn.mcres.karlatemp.mirai;
 
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Group;
-import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.message.data.*;
 
 import java.nio.CharBuffer;
-import java.util.NoSuchElementException;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MessageCoder {

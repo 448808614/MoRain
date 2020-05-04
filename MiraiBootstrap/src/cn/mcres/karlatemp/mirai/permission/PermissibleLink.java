@@ -17,16 +17,16 @@ public class PermissibleLink implements Permissible {
     protected final Collection<Permissible> ps;
     protected String name;
 
-    public Collection<Permissible> getPs() {
-        return ps;
-    }
-
     public PermissibleLink() {
         this(new LinkedList<>());
     }
 
     public PermissibleLink(@NotNull Collection<Permissible> permissible) {
         this.ps = permissible;
+    }
+
+    public Collection<Permissible> getPs() {
+        return ps;
     }
 
     @Override

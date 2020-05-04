@@ -24,7 +24,6 @@ import org.apache.hc.client5.http.async.methods.SimpleHttpRequest
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse
 import org.apache.hc.client5.http.classic.methods.HttpGet
 import org.apache.hc.core5.concurrent.FutureCallback
-import java.lang.Exception
 import java.time.Instant
 import java.time.ZoneId
 import java.util.*

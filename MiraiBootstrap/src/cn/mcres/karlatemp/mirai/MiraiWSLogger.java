@@ -17,63 +17,25 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
-import io.netty.channel.nio.NioEventLoop;
-import io.netty.handler.codec.http.*;
-import io.netty.handler.codec.http.websocketx.*;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.util.concurrent.GlobalEventExecutor;
 
 import java.io.PrintStream;
 import java.util.Deque;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MiraiWSLogger {
-    public Deque<String> logs = new ConcurrentLinkedDeque<>();
-    public boolean removeMode = false;
     public final AtomicInteger log_counter = new AtomicInteger();
     public final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-
-    public static void install(int i) {
-        MiraiWSLogger logger = new MiraiWSLogger(i);
-        PrintStream oldPs = System.out;
-        PrintStream ps = new InlinePrintStream() {
-            @Override
-            public void print(String s) {
-                oldPs.println(s);
-                logger.newMessage(s);
-            }
-
-            @Override
-            public void println() {
-                oldPs.println();
-                logger.newMessage("");
-            }
-
-            @Override
-            public void println(String x) {
-                oldPs.println(x);
-                logger.newMessage(x);
-            }
-        };
-        System.setOut(ps);
-        System.setErr(ps);
-    }
-
-    public void newMessage(String message) {
-        logs.add(message);
-        if (!removeMode) {
-            if (log_counter.getAndIncrement() == 300) {
-                removeMode = true;
-            }
-        } else {
-            logs.removeFirst();
-        }
-        for (Channel c : channels) {
-            c.writeAndFlush(new TextWebSocketFrame(message));
-        }
-    }
+    public Deque<String> logs = new ConcurrentLinkedDeque<>();
+    public boolean removeMode = false;
 
     public MiraiWSLogger(int port) {
         System.out.println("Mirai Logger Initialized on port " + port);
@@ -125,5 +87,45 @@ public class MiraiWSLogger {
                     }
                 })
                 .bind(port);
+    }
+
+    public static void install(int i) {
+        MiraiWSLogger logger = new MiraiWSLogger(i);
+        PrintStream oldPs = System.out;
+        PrintStream ps = new InlinePrintStream() {
+            @Override
+            public void print(String s) {
+                oldPs.println(s);
+                logger.newMessage(s);
+            }
+
+            @Override
+            public void println() {
+                oldPs.println();
+                logger.newMessage("");
+            }
+
+            @Override
+            public void println(String x) {
+                oldPs.println(x);
+                logger.newMessage(x);
+            }
+        };
+        System.setOut(ps);
+        System.setErr(ps);
+    }
+
+    public void newMessage(String message) {
+        logs.add(message);
+        if (!removeMode) {
+            if (log_counter.getAndIncrement() == 300) {
+                removeMode = true;
+            }
+        } else {
+            logs.removeFirst();
+        }
+        for (Channel c : channels) {
+            c.writeAndFlush(new TextWebSocketFrame(message));
+        }
     }
 }

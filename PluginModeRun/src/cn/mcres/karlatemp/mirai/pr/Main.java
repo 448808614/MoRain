@@ -12,24 +12,20 @@ import cn.mcres.karlatemp.mirai.*;
 import cn.mcres.karlatemp.mirai.event.MessageSendEvent;
 import cn.mcres.karlatemp.mirai.permission.PermissionManager;
 import cn.mcres.karlatemp.mirai.plugin.Plugin;
-import cn.mcres.karlatemp.mirai.pr.commands.*;
 import cn.mcres.karlatemp.mirai.pr.commands.Logging;
+import cn.mcres.karlatemp.mirai.pr.commands.*;
 import cn.mcres.karlatemp.mirai.pr.listener.MemberJLListener;
 import cn.mcres.karlatemp.mirai.pr.magic.Color;
-import cn.mcres.karlatemp.mxlib.tools.Toolkit;
 import jdk.nashorn.internal.objects.Global;
 import kotlin.coroutines.CoroutineContext;
-import kotlin.jvm.functions.Function2;
 import kotlinx.coroutines.CoroutineScope;
 import net.mamoe.mirai.message.ContactMessage;
 import net.mamoe.mirai.message.GroupMessage;
 import net.mamoe.mirai.message.data.Message;
 import net.mamoe.mirai.message.data.*;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.security.SecureRandom;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -38,6 +34,8 @@ public class Main extends Plugin implements CoroutineScope {
     public static final String VERSION = "1.0.4";
     @NotNull
     public static final Main INSTANCE = new Main();
+    public static final Random random = new SecureRandom();
+    private static final CoroutineScope context = AsyncExecKt.INSTANCE.getNewScope();
 
     @NotNull
     public static Main getInstance() {
@@ -58,8 +56,6 @@ public class Main extends Plugin implements CoroutineScope {
     public String getDescription() {
         return "MoRain 核心";
     }
-
-    public static final Random random = new SecureRandom();
 
     @Override
     public void onDisable() {
@@ -214,8 +210,6 @@ public class Main extends Plugin implements CoroutineScope {
         });
         KotlinInitializerKt.initialize();
     }
-
-    private static final CoroutineScope context = AsyncExecKt.INSTANCE.getNewScope();
 
     @NotNull
     @Override

@@ -31,91 +31,6 @@ public class MessageLink implements Serializable {
         return this;
     }
 
-    public static abstract class Action implements Serializable {
-        public static final long serialVersionUID = -9007870469836068169L;
-
-        public abstract void append(Contact contact, User sender, Collection<Message> messages);
-    }
-
-    public static class ActionAtIt extends Action {
-        public static final long serialVersionUID = 0x123975eddaffL;
-        public static final ActionAtIt INSTANCE = new ActionAtIt();
-
-        private ActionAtIt() {
-        }
-
-        private Object readResolve() {
-            return INSTANCE;
-        }
-
-        private void readObject(ObjectInputStream stream) {
-        }
-
-        private void writeObject(ObjectOutputStream stream) {
-        }
-
-        @Override
-        public void append(Contact contact, User sender, Collection<Message> messages) {
-            if (sender instanceof Member) {
-                messages.add(new At((Member) sender));
-            }
-        }
-    }
-
-    public static class ActionPlant extends Action {
-        public static final long serialVersionUID = 8647684171544548745L;
-
-        private void readObject(ObjectInputStream stream) throws IOException {
-            string = stream.readUTF();
-        }
-
-        private void writeObject(ObjectOutputStream stream) throws IOException {
-            stream.writeUTF(string);
-        }
-
-        public String string;
-
-        @Override
-        public void append(Contact contact, User sender, Collection<Message> messages) {
-            messages.add(new PlainText(string));
-        }
-
-        public ActionPlant value(String substring) {
-            string = substring;
-            return this;
-        }
-    }
-
-    public static class ActionImage extends Action {
-        public static final long serialVersionUID = 998784464875457L;
-        public File file;
-
-        private void readObject(ObjectInputStream stream) throws IOException {
-            file = new File(stream.readUTF());
-        }
-
-        private void writeObject(ObjectOutputStream stream) throws IOException {
-            stream.writeUTF(file.getPath());
-        }
-
-        @Override
-        public void append(Contact contact, User sender, Collection<Message> messages) {
-            int counter = 5;
-            while (counter-- > 0) {
-                try {
-                    messages.add(contact.uploadImage(file));
-                    break;
-                } catch (Exception ignore) {
-                }
-            }
-        }
-
-        public ActionImage file(File file) {
-            this.file = file;
-            return this;
-        }
-    }
-
     private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
         int counter = stream.readUnsignedShort();
         actions = new LinkedList<>();
@@ -169,6 +84,90 @@ public class MessageLink implements Serializable {
                     }
                 } while (true);
             }
+        }
+    }
+
+    public static abstract class Action implements Serializable {
+        public static final long serialVersionUID = -9007870469836068169L;
+
+        public abstract void append(Contact contact, User sender, Collection<Message> messages);
+    }
+
+    public static class ActionAtIt extends Action {
+        public static final long serialVersionUID = 0x123975eddaffL;
+        public static final ActionAtIt INSTANCE = new ActionAtIt();
+
+        private ActionAtIt() {
+        }
+
+        private Object readResolve() {
+            return INSTANCE;
+        }
+
+        private void readObject(ObjectInputStream stream) {
+        }
+
+        private void writeObject(ObjectOutputStream stream) {
+        }
+
+        @Override
+        public void append(Contact contact, User sender, Collection<Message> messages) {
+            if (sender instanceof Member) {
+                messages.add(new At((Member) sender));
+            }
+        }
+    }
+
+    public static class ActionPlant extends Action {
+        public static final long serialVersionUID = 8647684171544548745L;
+        public String string;
+
+        private void readObject(ObjectInputStream stream) throws IOException {
+            string = stream.readUTF();
+        }
+
+        private void writeObject(ObjectOutputStream stream) throws IOException {
+            stream.writeUTF(string);
+        }
+
+        @Override
+        public void append(Contact contact, User sender, Collection<Message> messages) {
+            messages.add(new PlainText(string));
+        }
+
+        public ActionPlant value(String substring) {
+            string = substring;
+            return this;
+        }
+    }
+
+    public static class ActionImage extends Action {
+        public static final long serialVersionUID = 998784464875457L;
+        public File file;
+
+        private void readObject(ObjectInputStream stream) throws IOException {
+            file = new File(stream.readUTF());
+        }
+
+        private void writeObject(ObjectOutputStream stream) throws IOException {
+            stream.writeUTF(file.getPath());
+        }
+
+        @Override
+        public void append(Contact contact, User sender, Collection<Message> messages) {
+            int counter = 5;
+            while (counter-- > 0) {
+                try {
+                    messages.add(contact.uploadImage(file));
+                    break;
+                } catch (Exception ignore) {
+                }
+            }
+        }
+
+        public ActionImage file(File file) {
+            this.file = file;
+            return this;
         }
     }
 }

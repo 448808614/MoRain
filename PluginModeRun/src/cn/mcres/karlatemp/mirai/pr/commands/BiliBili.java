@@ -46,17 +46,6 @@ for i in range(58):
 */
     private static final char[] table = "fZodR9XQDSUm21yCkr6zBqiveYah8bt4xsWpHnJE7jL5VG3guMTKNPAwcF".toCharArray();
     private static final int[] tr = new int[125];
-
-    static {
-        /*
-for i in range(58):
-	tr[table[i]]=i
-	*/
-        for (int i = 0; i < 58; i++) {
-            tr[table[i]] = i;
-        }
-    }
-
     /*
     s=[11,10,3,8,4,6,2,9,5,7]
     xor=177451812
@@ -68,6 +57,16 @@ for i in range(58):
     private static final long add = 100618342136696320L;
     private static final BigInteger add0 = BigInteger.valueOf(add);
     private static final BigInteger base = BigInteger.valueOf(58);
+
+    static {
+        /*
+for i in range(58):
+	tr[table[i]]=i
+	*/
+        for (int i = 0; i < 58; i++) {
+            tr[table[i]] = i;
+        }
+    }
 
     public static long dec(char[] x) {
 /*
@@ -142,6 +141,21 @@ def enc(x):
         tok.add(new ArgumentToken("vid"));
         tok.add(new ArgumentToken(group));
         return tok;
+    }
+
+    private static void cutDesc(String fullDesc, StringBuilder buffer) {
+        if (fullDesc.length() > 100) buffer.append(fullDesc, 0, 100).append("...");
+        else buffer.append(fullDesc);
+    }
+
+    public static String make_check(String id) {
+        if (id.startsWith("BV")) {
+            return "https://api.bilibili.com/x/web-interface/view?bvid=" + id;
+        }
+        if (id.startsWith("av")) {
+            return "https://api.bilibili.com/x/web-interface/view?aid=" + id.substring(2);
+        }
+        return "https://api.bilibili.com/x/web-interface/view?aid=" + id;
     }
 
     @Override
@@ -269,20 +283,5 @@ def enc(x):
                 }
             }
         }
-    }
-
-    private static void cutDesc(String fullDesc, StringBuilder buffer) {
-        if (fullDesc.length() > 100) buffer.append(fullDesc, 0, 100).append("...");
-        else buffer.append(fullDesc);
-    }
-
-    public static String make_check(String id) {
-        if (id.startsWith("BV")) {
-            return "https://api.bilibili.com/x/web-interface/view?bvid=" + id;
-        }
-        if (id.startsWith("av")) {
-            return "https://api.bilibili.com/x/web-interface/view?aid=" + id.substring(2);
-        }
-        return "https://api.bilibili.com/x/web-interface/view?aid=" + id;
     }
 }

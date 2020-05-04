@@ -10,7 +10,6 @@ package cn.mcres.karlatemp.mirai;
 
 import cn.mcres.karlatemp.mirai.arguments.ArgumentParser;
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken;
-import cn.mcres.karlatemp.mirai.command.KotlinCommand;
 import cn.mcres.karlatemp.mirai.command.MCommand;
 import cn.mcres.karlatemp.mirai.event.MemberJoinGroupEvent;
 import cn.mcres.karlatemp.mirai.event.MemberLeaveGroupEvent;
@@ -25,7 +24,6 @@ import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.BotFactoryJvm;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.MemberPermission;
-import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.event.events.MemberJoinEvent;
 import net.mamoe.mirai.event.events.MemberLeaveEvent;
 import net.mamoe.mirai.japt.Events;
@@ -59,16 +57,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Bootstrap {
-    private static final Object VOID0 = null;
-
-    @SuppressWarnings("unchecked")
-    public static <T> T VOID() {
-        return (T) VOID0;
-    }
-
-    @NotNull
-    public static final Bot bot = VOID();
-
     public static final BitSet commandPrefixes = new BitSet() {{
         set('/', true);
         set('#', true);
@@ -90,6 +78,15 @@ public class Bootstrap {
         set('、', true); // What the hell??
         set('￥', true); // ?????????
     }};
+    public static final String VERSION = "1.0.1";
+    private static final Object VOID0 = null;
+    @NotNull
+    public static final Bot bot = VOID();
+
+    @SuppressWarnings("unchecked")
+    public static <T> T VOID() {
+        return (T) VOID0;
+    }
 
     public static long getLoginQQ() {
         return LoginData.getLoginQQ();
@@ -98,8 +95,6 @@ public class Bootstrap {
     public static String getLoginPasswd() {
         return LoginData.getLoginPasswd();
     }
-
-    public static final String VERSION = "1.0.1";
 
     public static String getVersion() {
         return VERSION;

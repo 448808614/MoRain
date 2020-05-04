@@ -10,8 +10,8 @@ package cn.mcres.karlatemp.mirai.pr
 
 import cn.mcres.karlatemp.mirai.*
 import cn.mcres.karlatemp.mirai.command.KCAlias
-import cn.mcres.karlatemp.mirai.command.MCommand
 import cn.mcres.karlatemp.mirai.command.KCommand
+import cn.mcres.karlatemp.mirai.command.MCommand
 import java.lang.reflect.Modifier
 
 

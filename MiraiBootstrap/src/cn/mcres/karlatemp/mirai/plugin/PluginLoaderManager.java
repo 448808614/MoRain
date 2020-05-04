@@ -23,41 +23,11 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class PluginLoaderManager {
-    private static final ClassLoader parent = PluginLoaderManager.class.getClassLoader();
     public static final LinkedList<URLClassLoader> libraries = new LinkedList<>();
     public static final LinkedList<PluginClassLoader> plugins = new LinkedList<>();
     public static final LinkedList<Plugin> plugins0 = new LinkedList<>();
     public static final ThreadLocal<JarFile> scanning = new ThreadLocal<>();
-
-    public static class PluginClassLoader extends URLClassLoader {
-        public PluginClassLoader(URL[] urls, ClassLoader parent) {
-            super(urls, parent);
-        }
-
-        protected Class<?> findSuper(String klass) throws ClassNotFoundException {
-            return super.findClass(klass);
-        }
-
-        protected Class<?> findClass(String klass) throws ClassNotFoundException {
-            try {
-                return super.findClass(klass);
-            } catch (ClassNotFoundException notFound) {
-                for (URLClassLoader loader : libraries) {
-                    try {
-                        return loader.loadClass(klass);
-                    } catch (ClassNotFoundException ignore) {
-                    }
-                }
-                for (PluginClassLoader loader : plugins) {
-                    try {
-                        return loader.findSuper(klass);
-                    } catch (ClassNotFoundException ignore) {
-                    }
-                }
-                throw notFound;
-            }
-        }
-    }
+    private static final ClassLoader parent = PluginLoaderManager.class.getClassLoader();
 
     public static void clear() {
         libraries.clear();
@@ -131,5 +101,35 @@ public class PluginLoaderManager {
     private static Plugin register(Plugin plugin) {
         plugins0.add(plugin);
         return plugin;
+    }
+
+    public static class PluginClassLoader extends URLClassLoader {
+        public PluginClassLoader(URL[] urls, ClassLoader parent) {
+            super(urls, parent);
+        }
+
+        protected Class<?> findSuper(String klass) throws ClassNotFoundException {
+            return super.findClass(klass);
+        }
+
+        protected Class<?> findClass(String klass) throws ClassNotFoundException {
+            try {
+                return super.findClass(klass);
+            } catch (ClassNotFoundException notFound) {
+                for (URLClassLoader loader : libraries) {
+                    try {
+                        return loader.loadClass(klass);
+                    } catch (ClassNotFoundException ignore) {
+                    }
+                }
+                for (PluginClassLoader loader : plugins) {
+                    try {
+                        return loader.findSuper(klass);
+                    } catch (ClassNotFoundException ignore) {
+                    }
+                }
+                throw notFound;
+            }
+        }
     }
 }
