@@ -18,7 +18,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.User;
-import net.mamoe.mirai.message.ContactMessage;
+import net.mamoe.mirai.message.MessageEvent;
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
 import org.apache.hc.core5.concurrent.FutureCallback;
 import org.jetbrains.annotations.NotNull;
@@ -72,7 +72,7 @@ public class Hitokoto implements MCommand {
     }
 
     @Override
-    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
+    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull MessageEvent packet, @NotNull LinkedList<ArgumentToken> args) {
         StringBuilder param = null;
         if (!args.isEmpty()) {
             param = new StringBuilder("c=" + URLEncoder.encode(args.poll().getAsString(), StandardCharsets.UTF_8));

@@ -15,7 +15,7 @@ import cn.mcres.karlatemp.mirai.permission.Permissible;
 import cn.mcres.karlatemp.mirai.permission.PermissionManager;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.User;
-import net.mamoe.mirai.message.ContactMessage;
+import net.mamoe.mirai.message.MessageEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
@@ -28,13 +28,13 @@ public interface MCommand {
     void invoke(
             @NotNull Contact contact,
             @NotNull User sender,
-            @NotNull ContactMessage packet,
+            @NotNull MessageEvent packet,
             @NotNull LinkedList<ArgumentToken> args) throws Exception;
 
     default void $$$$invoke$$(
             @NotNull Contact contact,
             @NotNull User sender,
-            @NotNull ContactMessage packet,
+            @NotNull MessageEvent packet,
             @NotNull LinkedList<ArgumentToken> args,
             String key) throws Exception {
         Permissible p = PermissionManager.PERMISSIBLE_THREAD_LOCAL.get();

@@ -15,6 +15,7 @@ import cn.mcres.karlatemp.mxlib.tools.Unsafe;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import jdk.nashorn.internal.objects.Global;
+import net.mamoe.mirai.message.MessageEvent;
 import net.mamoe.mirai.message.MessagePacket;
 import net.mamoe.mirai.message.data.MessageChain;
 import org.jetbrains.annotations.NotNull;
@@ -91,7 +92,7 @@ public class Eval {
         return value;
     }
 
-    public static boolean eval(MessageChain chain, MessagePacket<?, ?> event) {
+    public static boolean eval(MessageChain chain, MessageEvent event) {
         final String compiled = MessageCoder.coder(chain).toString().trim();
         if (compiled.startsWith("-eval ")) {
             final Permissible permissible = PermissionManager.PERMISSIBLE_THREAD_LOCAL.get();

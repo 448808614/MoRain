@@ -14,8 +14,9 @@ import cn.mcres.karlatemp.mirai.pr.WordKey;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.User;
-import net.mamoe.mirai.message.ContactMessage;
 import net.mamoe.mirai.message.GroupMessage;
+import net.mamoe.mirai.message.GroupMessageEvent;
+import net.mamoe.mirai.message.MessageEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
@@ -33,7 +34,7 @@ public class WK implements MCommand {
     register [global/group] [wk]
      */
     @Override
-    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) throws Exception {
+    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull MessageEvent packet, @NotNull LinkedList<ArgumentToken> args) throws Exception {
         if (args.isEmpty()) return;
         var s1 = args.poll().getAsString();
         if (args.isEmpty() && !s1.equals("list")) return;
@@ -96,7 +97,7 @@ public class WK implements MCommand {
                         break;
                     }
                     case "group": {
-                        if (!(packet instanceof GroupMessage)) {
+                        if (!(packet instanceof GroupMessageEvent)) {
                             contact.sendMessageAsync("Only group can use group word key");
                             return;
                         }

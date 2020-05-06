@@ -8,6 +8,7 @@
 
 package cn.mcres.karlatemp.mirai.pr;
 
+import cn.mcres.karlatemp.mirai.HelperKt;
 import cn.mcres.karlatemp.mirai.Http;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Member;
@@ -55,12 +56,12 @@ public class MessageLink implements Serializable {
     public void override(MessageChain chain) {
         actions.clear();
         for (var m : chain) {
-            if (m instanceof OnlineImage) {
-                var image = (OnlineImage) m;
+            if (m instanceof Image) {
+                var image = (Image) m;
                 File file = Http.download(
                         "imgs/" + Base64.getEncoder().encodeToString(
                                 image.getImageId().getBytes(StandardCharsets.UTF_8)
-                        ), image.getOriginUrl());
+                        ), HelperKt.queryUrlBlocking(image));
                 if (file != null) {
                     actions.add(new ActionImage().file(file));
                 }

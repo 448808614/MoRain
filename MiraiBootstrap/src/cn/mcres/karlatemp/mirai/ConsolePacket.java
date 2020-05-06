@@ -14,6 +14,7 @@ import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.event.events.EventCancelledException;
 import net.mamoe.mirai.message.ContactMessage;
+import net.mamoe.mirai.message.MessageEvent;
 import net.mamoe.mirai.message.MessageReceipt;
 import net.mamoe.mirai.message.data.Message;
 import net.mamoe.mirai.message.data.MessageChain;
@@ -21,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.Future;
 
-public final class ConsolePacket extends ContactMessage {
+public final class ConsolePacket extends MessageEvent {
     public static final ConsolePacket INSTANCE = new ConsolePacket();
     private static final User console_qq = new User() {
         @Override

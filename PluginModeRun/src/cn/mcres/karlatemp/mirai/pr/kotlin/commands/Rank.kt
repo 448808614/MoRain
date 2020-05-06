@@ -26,7 +26,7 @@ import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.contact.User
 import net.mamoe.mirai.contact.nameCardOrNick
-import net.mamoe.mirai.message.ContactMessage
+import net.mamoe.mirai.message.MessageEvent
 import net.mamoe.mirai.message.data.toMessage
 import java.io.*
 import java.time.Instant
@@ -129,7 +129,7 @@ object Rank : KotlinCommand(), AutoInitializer {
         }
     }
 
-    override suspend fun invoke0(contact: Contact, sender: User, packet: ContactMessage, args: LinkedList<ArgumentToken>) {
+    override suspend fun invoke0(contact: Contact, sender: User, packet: MessageEvent, args: LinkedList<ArgumentToken>) {
         if (contact !is Group) {
             "Only group can use this command".toMessage() sendTo contact
             return

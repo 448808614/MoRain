@@ -11,18 +11,18 @@ package cn.mcres.karlatemp.mirai.event;
 import cn.mcres.karlatemp.mxlib.event.Cancellable;
 import cn.mcres.karlatemp.mxlib.event.Event;
 import cn.mcres.karlatemp.mxlib.event.HandlerList;
-import net.mamoe.mirai.message.ContactMessage;
+import net.mamoe.mirai.message.MessageEvent;
 
 public class MessageSendEvent extends Event implements Cancellable {
     public static final HandlerList<MessageSendEvent> handlers = new HandlerList<>();
-    private final ContactMessage event;
+    private final MessageEvent event;
     private boolean c;
 
-    public MessageSendEvent(ContactMessage event) {
+    public MessageSendEvent(MessageEvent event) {
         this.event = event;
     }
 
-    public ContactMessage getEvent() {
+    public MessageEvent getEvent() {
         return event;
     }
 

@@ -14,18 +14,13 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.Contact
+import net.mamoe.mirai.event.Listener
 import net.mamoe.mirai.event.subscribeAlways
-import net.mamoe.mirai.message.ContactMessage
-import net.mamoe.mirai.message.FriendMessage
-import net.mamoe.mirai.message.GroupMessage
+import net.mamoe.mirai.message.MessageEvent
 import net.mamoe.mirai.message.data.Message
 import java.util.concurrent.ConcurrentLinkedDeque
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
-
-interface EventPoster {
-    suspend fun post(msg: ContactMessage)
-}
 
 object BotSuspendWrap {
     @JvmStatic
@@ -34,12 +29,13 @@ object BotSuspendWrap {
     }
 }
 
-fun initialize(bot: Bot, poster: EventPoster) {
-    bot.subscribeAlways<FriendMessage> {
-        poster.post(this)
-    }
-    bot.subscribeAlways<GroupMessage> {
-        poster.post(this)
+fun initialize(bot: Bot) {
+    bot.subscribeAlways<MessageEvent>(
+            priority = Listener.EventPriority.MONITOR,
+            concurrency = Listener.ConcurrencyKind.CONCURRENT,
+            coroutineContext = AsyncExecKt.dispatcher
+    ) {
+        Bootstrap.accept(this)
     }
 }
 
@@ -68,5 +64,5 @@ object AsyncExecKt {
     val dispatcher = AsyncExec.service.asCoroutineDispatcher()
     val newContext: CoroutineContext get() = (dispatcher + EmptyCoroutineContext).also { allContexts.add(it) }
     val newScope: CoroutineScope
-        get() = CoroutineScope(newContext).also { allScopes.add(it) }
+        get() = CoroutineScope(dispatcher).also { allScopes.add(it) }
 }

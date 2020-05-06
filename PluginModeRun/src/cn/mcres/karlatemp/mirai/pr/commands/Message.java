@@ -17,9 +17,7 @@ import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.event.Listener;
 import net.mamoe.mirai.japt.Events;
-import net.mamoe.mirai.message.ContactMessage;
-import net.mamoe.mirai.message.FriendMessage;
-import net.mamoe.mirai.message.GroupMessage;
+import net.mamoe.mirai.message.*;
 import net.mamoe.mirai.message.data.MessageChain;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,15 +34,15 @@ public class Message implements MCommand {
         boolean isGroup = contact instanceof Group;
         var cc = contact.getId();
         var si = sender.getId();
-        listener.set(Events.subscribeAlways(ContactMessage.class, event -> {
+        listener.set(Events.subscribeAlways(MessageEvent.class, event -> {
             if (System.currentTimeMillis() - current > 60000) {
                 listener.get().complete();
                 chain.complete(null);
                 return;
             }
             if (isGroup) {
-                if (event instanceof GroupMessage) {
-                    var gm = (GroupMessage) event;
+                if (event instanceof GroupMessageEvent) {
+                    var gm = (GroupMessageEvent) event;
                     if (gm.getGroup().getId() == cc) {
                         if (gm.getSender().getId() == si) {
                             chain.complete(event.getMessage());
@@ -52,7 +50,7 @@ public class Message implements MCommand {
                         }
                     }
                 }
-            } else if (event instanceof FriendMessage) {
+            } else if (event instanceof FriendMessageEvent) {
                 if (si == event.getSender().getId()) {
                     chain.complete(event.getMessage());
                     listener.get().complete();
@@ -69,13 +67,13 @@ public class Message implements MCommand {
 
 
     @Override
-    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) throws ExecutionException, InterruptedException {
+    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull MessageEvent packet, @NotNull LinkedList<ArgumentToken> args) throws ExecutionException, InterruptedException {
         if (args.isEmpty()) return;
-        if (!(packet instanceof GroupMessage)) {
+        if (!(packet instanceof GroupMessageEvent)) {
             contact.sendMessageAsync("This command only use for group.");
             return;
         }
-        GroupMessage group = (GroupMessage) packet;
+        GroupMessageEvent group = (GroupMessageEvent) packet;
         switch (args.poll().getAsString()) {
             case "remove": {
                 if (args.isEmpty()) {

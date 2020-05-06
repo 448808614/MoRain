@@ -12,7 +12,7 @@ import cn.mcres.karlatemp.mirai.arguments.ArgumentToken;
 import cn.mcres.karlatemp.mirai.command.MCommand;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.User;
-import net.mamoe.mirai.message.ContactMessage;
+import net.mamoe.mirai.message.MessageEvent;
 import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.Message;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
@@ -25,11 +25,11 @@ import java.util.LinkedList;
 
 public class Raw implements MCommand {
     @Override
-    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
+    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull MessageEvent packet, @NotNull LinkedList<ArgumentToken> args) {
         MessageChainBuilder builder = new MessageChainBuilder();
         for (Message m : packet.getMessage()) {
             if (m instanceof PlainText) {
-                builder.add("plain{" + ((PlainText) m).getStringValue() + "}");
+                builder.add("plain{" + ((PlainText) m).getContent() + "}");
             } else if (m instanceof At) {
                 builder.add("at{qq=" + ((At) m).getTarget() + ", display=" + ((At) m).getDisplay() + ", encoded=" + Base64.getEncoder().encodeToString(((At) m).getDisplay().getBytes(StandardCharsets.UTF_8)) + "}");
             }

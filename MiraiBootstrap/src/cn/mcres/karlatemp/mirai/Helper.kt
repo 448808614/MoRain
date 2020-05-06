@@ -21,7 +21,9 @@ import net.mamoe.mirai.contact.ContactList
 import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.message.data.ForwardMessageBuilder
+import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.Message
+import net.mamoe.mirai.message.data.queryUrl
 import java.security.SecureRandom
 import java.util.jar.JarFile
 import java.util.logging.Level
@@ -115,6 +117,7 @@ inline fun <reified E : Event> on(crossinline handler: E.(E) -> Unit) {
 }
 
 inline fun permissible(): Permissible = PermissionManager.PERMISSIBLE_THREAD_LOCAL.get()
+inline fun permissible(override: Permissible) = PermissionManager.PERMISSIBLE_THREAD_LOCAL.set(override)
 
 inline fun String.checkPermission() = permissible().hasPermission(this)
 
@@ -178,5 +181,11 @@ data class LuckyUser(val qq: Long, val name: String) {
         with(builder) {
             return qq named name
         }
+    }
+}
+
+fun Image.queryUrlBlocking(): String {
+    return kotlinx.coroutines.runBlocking {
+        queryUrl()
     }
 }

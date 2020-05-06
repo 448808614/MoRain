@@ -9,7 +9,6 @@
 package cn.mcres.karlatemp.mirai;
 
 import cn.mcres.karlatemp.mxlib.tools.Toolkit;
-import net.mamoe.mirai.console.MiraiConsole;
 import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
@@ -30,7 +29,7 @@ import java.util.concurrent.Future;
 public class Http {
     public static final CloseableHttpAsyncClient client = HttpAsyncClients.custom()
             .disableCookieManagement()
-            .setUserAgent("Java/" + System.getProperty("java.version") + " Mirai/" + MiraiConsole.version)
+            .setUserAgent("Java/" + System.getProperty("java.version"))
             .setConnectionManager(PoolingAsyncClientConnectionManagerBuilder.create()
                     .setMaxConnTotal(500)
                     .build())

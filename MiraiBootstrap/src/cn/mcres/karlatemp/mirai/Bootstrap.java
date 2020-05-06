@@ -27,8 +27,8 @@ import net.mamoe.mirai.contact.MemberPermission;
 import net.mamoe.mirai.event.events.MemberJoinEvent;
 import net.mamoe.mirai.event.events.MemberLeaveEvent;
 import net.mamoe.mirai.japt.Events;
-import net.mamoe.mirai.message.ContactMessage;
-import net.mamoe.mirai.message.GroupMessage;
+import net.mamoe.mirai.message.GroupMessageEvent;
+import net.mamoe.mirai.message.MessageEvent;
 import net.mamoe.mirai.message.data.MessageSource;
 import net.mamoe.mirai.message.data.PlainText;
 import net.mamoe.mirai.message.data.QuoteReply;
@@ -170,13 +170,8 @@ public class Bootstrap {
         } while (true);
     }
 
-    public static Unit accept0(ContactMessage event, Continuation<? super Unit> continuation) {
-        accept(event, continuation);
-        return Unit.INSTANCE;
-    }
-
-    public static void accept(ContactMessage event, Continuation<? super Unit> continuation) {
-        if (event instanceof GroupMessage) {
+    public static void accept(MessageEvent event) {
+        if (event instanceof GroupMessageEvent) {
             final Iterator<SingleMessage> iterator = event.getMessage().iterator();
             while (iterator.hasNext()) {
                 final SingleMessage next = iterator.next();
@@ -185,7 +180,7 @@ public class Bootstrap {
                     while (iterator.hasNext()) {
                         final SingleMessage next0 = iterator.next();
                         if (next0 instanceof PlainText) {
-                            if (((PlainText) next0).getStringValue().equalsIgnoreCase("/recall")) {
+                            if (((PlainText) next0).getContent().equalsIgnoreCase("/recall")) {
                                 event.getBot().recallAsync(source);
                                 event.getBot().recallAsync(event.getMessage());
                                 return;
@@ -195,11 +190,11 @@ public class Bootstrap {
                 }
             }
         }
-        if (event instanceof GroupMessage) {
+        if (event instanceof GroupMessageEvent) {
             PermissionManager.PERMISSIBLE_THREAD_LOCAL.set(
                     PermissionManager.getPermission(event.getSender().getId(),
                             event.getSubject().getId(),
-                            ((GroupMessage) event).getPermission() != MemberPermission.MEMBER)
+                            ((GroupMessageEvent) event).getPermission() != MemberPermission.MEMBER)
             );
         } else {
             PermissionManager.PERMISSIBLE_THREAD_LOCAL.set(
@@ -267,7 +262,7 @@ public class Bootstrap {
 
     public static void initialize(Bot bot) throws NoSuchFieldException {
         Toolkit.Reflection.setObjectValue(null, Bootstrap.class.getField("bot"), bot);
-        BootstrapKt.initialize(bot, Bootstrap::accept0);
+        BootstrapKt.initialize(bot);
         Events.subscribeAlways(MemberLeaveEvent.class, event -> {
             new MemberLeaveGroupEvent(event).post();
         });

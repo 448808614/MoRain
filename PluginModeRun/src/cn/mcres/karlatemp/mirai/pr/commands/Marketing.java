@@ -14,7 +14,7 @@ import cn.mcres.karlatemp.mirai.command.KCommand;
 import cn.mcres.karlatemp.mirai.command.MCommand;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.User;
-import net.mamoe.mirai.message.ContactMessage;
+import net.mamoe.mirai.message.MessageEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
@@ -23,7 +23,7 @@ import java.util.LinkedList;
 @KCAlias(alias = {"营销号"})
 public class Marketing implements MCommand {
     @Override
-    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) throws Exception {
+    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull MessageEvent packet, @NotNull LinkedList<ArgumentToken> args) throws Exception {
         if (args.size() < 3) {
             contact.sendMessageAsync("" +
                     "营销号生成器vUnknown:\n" +

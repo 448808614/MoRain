@@ -15,7 +15,7 @@ import cn.mcres.karlatemp.mirai.permission.PermissionBase;
 import cn.mcres.karlatemp.mirai.permission.PermissionManager;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.User;
-import net.mamoe.mirai.message.ContactMessage;
+import net.mamoe.mirai.message.MessageEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
@@ -28,7 +28,7 @@ public class Perm implements MCommand {
     }
 
     @Override
-    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
+    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull MessageEvent packet, @NotNull LinkedList<ArgumentToken> args) {
         if (args.isEmpty()) {
             return;
         }

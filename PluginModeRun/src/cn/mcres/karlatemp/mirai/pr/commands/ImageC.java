@@ -9,6 +9,7 @@
 package cn.mcres.karlatemp.mirai.pr.commands;
 
 import cn.mcres.karlatemp.mirai.AsyncExec;
+import cn.mcres.karlatemp.mirai.HelperKt;
 import cn.mcres.karlatemp.mirai.Http;
 import cn.mcres.karlatemp.mirai.arguments.ArgumentImageToken;
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken;
@@ -19,9 +20,7 @@ import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.event.Listener;
 import net.mamoe.mirai.event.internal.EventInternalJvmKt;
-import net.mamoe.mirai.message.ContactMessage;
-import net.mamoe.mirai.message.FriendMessage;
-import net.mamoe.mirai.message.GroupMessage;
+import net.mamoe.mirai.message.*;
 import net.mamoe.mirai.message.data.Image;
 import net.mamoe.mirai.message.data.Message;
 import net.mamoe.mirai.message.data.OnlineImage;
@@ -45,16 +44,14 @@ import java.util.function.Function;
 
 public class ImageC implements MCommand {
     public static BufferedImage read(Image i) throws IOException {
-        if (i instanceof OnlineImage) {
-            File f = Http.download("img/image-" + Base64.getEncoder().encodeToString(i.getImageId().getBytes(StandardCharsets.UTF_8)), ((OnlineImage) i).getOriginUrl());
-            if (f == null) return null;
-            return ImageIO.read(f);
-        }
-        return null;
+        File f = Http.download("img/image-" + Base64.getEncoder().encodeToString(i.getImageId().getBytes(StandardCharsets.UTF_8)),
+                HelperKt.queryUrlBlocking(i));
+        if (f == null) return null;
+        return ImageIO.read(f);
     }
 
     @SuppressWarnings("KotlinInternalInJava")
-    public static void waitImage(LinkedList<ArgumentToken> tokens, ContactMessage packet, BiConsumer<BufferedImage, Throwable> image) {
+    public static void waitImage(LinkedList<ArgumentToken> tokens, MessageEvent packet, BiConsumer<BufferedImage, Throwable> image) {
         if (tokens != null) {
             if (!tokens.isEmpty()) {
                 final ArgumentToken token = tokens.poll();
@@ -70,19 +67,19 @@ public class ImageC implements MCommand {
         }
         AtomicReference<Listener<?>> listener = new AtomicReference<>();
         long current = System.currentTimeMillis();
-        listener.set(EventInternalJvmKt._subscribeEventForJaptOnly(ContactMessage.class, GlobalScope.INSTANCE, c -> {
+        listener.set(EventInternalJvmKt._subscribeEventForJaptOnly(MessageEvent.class, GlobalScope.INSTANCE, c -> {
             if (System.currentTimeMillis() - current > 60000) {
                 listener.get().complete();
                 return;
             }
-            if (packet instanceof GroupMessage) {
-                if (c instanceof GroupMessage) {
+            if (packet instanceof GroupMessageEvent) {
+                if (c instanceof GroupMessageEvent) {
                     if (c.getSubject().getId() != packet.getSubject().getId()) {
                         return;
                     }
                 } else return;
-            } else if (packet instanceof FriendMessage) {
-                if (!(c instanceof FriendMessage)) {
+            } else if (packet instanceof FriendMessageEvent) {
+                if (!(c instanceof FriendMessageEvent)) {
                     return;
                 }
             } else return;
@@ -218,7 +215,7 @@ public class ImageC implements MCommand {
     }
 
     @Override
-    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
+    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull MessageEvent packet, @NotNull LinkedList<ArgumentToken> args) {
         if (args.isEmpty()) return;
         switch (args.poll().getAsString()) {
             case "gray": {

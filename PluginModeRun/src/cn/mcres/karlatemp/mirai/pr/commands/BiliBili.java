@@ -16,8 +16,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.User;
-import net.mamoe.mirai.message.ContactMessage;
 import net.mamoe.mirai.message.GroupMessage;
+import net.mamoe.mirai.message.GroupMessageEvent;
+import net.mamoe.mirai.message.MessageEvent;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.RichMessage;
 import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
@@ -159,7 +160,7 @@ def enc(x):
     }
 
     @Override
-    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
+    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull MessageEvent packet, @NotNull LinkedList<ArgumentToken> args) {
         if (args.isEmpty()) {
             contact.sendMessageAsync("" +
                     "BiliBili>\n" +
@@ -216,7 +217,7 @@ def enc(x):
                                         buffer.append("分享>> ").append(stat.get("share").getAsString()).append("\n");
                                         buffer.append("点赞>> ").append(stat.get("like").getAsString()).append("\n");
                                         buffer.append("不喜欢>> ").append(stat.get("dislike").getAsString());
-                                        if (packet instanceof GroupMessage) {
+                                        if (packet instanceof GroupMessageEvent) {
                                             buffer.append("\n=================================\n");
                                             cutDesc(fullDesc, buffer);
                                         }

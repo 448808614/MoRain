@@ -14,7 +14,7 @@ import cn.mcres.karlatemp.mirai.pr.GroupSettings;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.User;
-import net.mamoe.mirai.message.ContactMessage;
+import net.mamoe.mirai.message.MessageEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
@@ -26,7 +26,7 @@ public class GroupOpt implements MCommand {
     }
 
     @Override
-    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) throws Exception {
+    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull MessageEvent packet, @NotNull LinkedList<ArgumentToken> args) throws Exception {
         if (!(contact instanceof Group)) {
             contact.sendMessageAsync("只能在群里使用......");
             return;

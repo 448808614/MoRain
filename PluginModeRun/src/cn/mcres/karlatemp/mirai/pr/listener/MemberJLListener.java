@@ -9,6 +9,7 @@
 package cn.mcres.karlatemp.mirai.pr.listener;
 
 import cn.mcres.karlatemp.mirai.Eval;
+import cn.mcres.karlatemp.mirai.HelperKt;
 import cn.mcres.karlatemp.mirai.Http;
 import cn.mcres.karlatemp.mirai.eval.NativeFunction;
 import cn.mcres.karlatemp.mirai.eval.ResultMethod;
@@ -96,10 +97,10 @@ public class MemberJLListener {
                 writer.flush();
             } else {
                 for (Message m : chain) {
-                    if (m instanceof OnlineImage) {
-                        OnlineImage image = (OnlineImage) m;
+                    if (m instanceof Image) {
+                        Image image = (Image) m;
                         String id = Base64.getEncoder().encodeToString(image.getImageId().getBytes(StandardCharsets.UTF_8));
-                        if (Http.download("../image/" + group + "/" + id, image.getOriginUrl()) != null) {
+                        if (Http.download("../image/" + group + "/" + id, HelperKt.queryUrlBlocking(image)) != null) {
                             writer.append("[image]").append(String.valueOf(group)).append('/').append(id).append('\n');
                         }
                     } else {

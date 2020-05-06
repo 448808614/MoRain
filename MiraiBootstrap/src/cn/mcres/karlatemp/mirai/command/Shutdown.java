@@ -11,7 +11,7 @@ package cn.mcres.karlatemp.mirai.command;
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken;
 import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.User;
-import net.mamoe.mirai.message.ContactMessage;
+import net.mamoe.mirai.message.MessageEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileDescriptor;
@@ -28,7 +28,7 @@ public class Shutdown implements MCommand {
     }
 
     @Override
-    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull ContactMessage packet, @NotNull LinkedList<ArgumentToken> args) {
+    public void invoke(@NotNull Contact contact, @NotNull User sender, @NotNull MessageEvent packet, @NotNull LinkedList<ArgumentToken> args) {
         long time = System.currentTimeMillis();
         if (time - invokeTime > 1000 * 30) {
             invokeTime = time;

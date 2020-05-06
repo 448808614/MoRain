@@ -17,7 +17,7 @@ import cn.mcres.karlatemp.mxlib.tools.URLEncoder
 import kotlinx.coroutines.launch
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.User
-import net.mamoe.mirai.message.ContactMessage
+import net.mamoe.mirai.message.MessageEvent
 import net.mamoe.mirai.message.data.buildForwardMessage
 import net.mamoe.mirai.message.data.toMessage
 import org.apache.hc.client5.http.async.methods.SimpleHttpRequest
@@ -94,7 +94,7 @@ object Covid : KotlinCommand() {
             val updateTime: Long
     )
 
-    override suspend fun invoke0(contact: Contact, sender: User, packet: ContactMessage, args: LinkedList<ArgumentToken>) {
+    override suspend fun invoke0(contact: Contact, sender: User, packet: MessageEvent, args: LinkedList<ArgumentToken>) {
         val url = "https://lab.isaaclin.cn/nCoV/api/area" + args.let {
             if (!it.isEmpty()) {
                 return@let "?province=" + URLEncoder.encode(it.poll().asString, Charsets.UTF_8)

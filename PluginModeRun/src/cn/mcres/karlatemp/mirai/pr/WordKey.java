@@ -138,7 +138,7 @@ public class WordKey implements Serializable {
             final SingleMessage first = build.iterator().next();
             try {
                 if (first instanceof PlainText) {
-                    contact.sendMessage(((PlainText) first).getStringValue());
+                    contact.sendMessage(((PlainText) first).getContent());
                 } else {
                     contact.sendMessage(first);
                 }
