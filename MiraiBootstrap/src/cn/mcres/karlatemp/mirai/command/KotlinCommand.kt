@@ -8,17 +8,15 @@
 
 package cn.mcres.karlatemp.mirai.command
 
-import cn.mcres.karlatemp.mirai.AsyncExecKt
 import cn.mcres.karlatemp.mirai.arguments.ArgumentToken
 import cn.mcres.karlatemp.mirai.permissible
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.User
 import net.mamoe.mirai.message.MessageEvent
 import java.util.*
 
-abstract class KotlinCommand : MCommand, CoroutineScope by AsyncExecKt.newScope {
+abstract class KotlinCommand : MCommand {
 
     final override fun invoke(contact: Contact, sender: User, packet: MessageEvent, args: LinkedList<ArgumentToken>) = throw IllegalAccessError()
 
