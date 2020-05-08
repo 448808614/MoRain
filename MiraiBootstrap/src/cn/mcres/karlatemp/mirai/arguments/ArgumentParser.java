@@ -15,31 +15,31 @@ import java.util.LinkedList;
 public class ArgumentParser {
     public static LinkedList<ArgumentToken> parse(MessageChain messages) {
         LinkedList<ArgumentToken> tokens = new LinkedList<>();
+        StringBuilder buffer = new StringBuilder();
         for (SingleMessage msg : messages) {
             if (msg instanceof Image) {
+                if (buffer.length() > 0) {
+                    parse(buffer.toString(), tokens);
+                    buffer.setLength(0);
+                }
                 tokens.add(new ArgumentImageToken((Image) msg));
             } else if (msg instanceof At) {
+                if (buffer.length() > 0) {
+                    parse(buffer.toString(), tokens);
+                    buffer.setLength(0);
+                }
                 tokens.add(new ArgumentAtToken((At) msg));
             } else if (msg instanceof PlainText) {
-                final String value = ((PlainText) msg).getStringValue().trim();
-                int start = 0;
-                do {
-                    int index = value.indexOf(' ', start);
-                    if (index == -1) {
-                        tokens.add(new ArgumentToken(value.substring(start)));
-                        break;
-                    } else {
-                        tokens.add(new ArgumentToken(value.substring(start, index)));
-                        start = index + 1;
-                    }
-                } while (true);
+                buffer.append(((PlainText) msg).getContent());
             }
+        }
+        if (buffer.length() > 0) {
+            parse(buffer.toString(), tokens);
         }
         return tokens;
     }
 
-    public static LinkedList<ArgumentToken> parse(String line) {
-        LinkedList<ArgumentToken> tokens = new LinkedList<>();
+    public static <T extends LinkedList<ArgumentToken>> T parse(String line, T tokens) {
         int start = 0;
         do {
             int index = line.indexOf(' ', start);
@@ -52,5 +52,9 @@ public class ArgumentParser {
             }
         } while (true);
         return tokens;
+    }
+
+    public static LinkedList<ArgumentToken> parse(String line) {
+        return parse(line, new LinkedList<>());
     }
 }
