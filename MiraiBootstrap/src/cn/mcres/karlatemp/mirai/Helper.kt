@@ -25,6 +25,7 @@ import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.Message
 import net.mamoe.mirai.message.data.queryUrl
 import java.security.SecureRandom
+import java.util.concurrent.atomic.AtomicReference
 import java.util.jar.JarFile
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -189,3 +190,10 @@ fun Image.queryUrlBlocking(): String {
         queryUrl()
     }
 }
+
+operator fun <V> AtomicReference<V>.setValue(ignored: Any, ignored0: kotlin.reflect.KProperty<*>, value: V) {
+    set(value)
+}
+
+operator fun <V> AtomicReference<V>.getValue(ignored0: Any, ignored: kotlin.reflect.KProperty<*>): V = get()
+
