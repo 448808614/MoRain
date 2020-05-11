@@ -293,7 +293,7 @@ public class Main extends Plugin implements CoroutineScope {
             for (Message mg : packet.getMessage()) {
                 if (mg instanceof FlashImage) {
                     packet.getSubject().sendMessageAsync(
-                            MessageUtils.quote(packet.getMessage())
+                            new QuoteReply(packet.getMessage().first(MessageSource.Key))
                                     .plus(MessageUtils.newImage(((FlashImage) mg).getImage().getImageId()))
                     );
                 }

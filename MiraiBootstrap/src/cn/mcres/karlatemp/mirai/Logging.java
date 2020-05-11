@@ -95,7 +95,10 @@ public class Logging {
                         trim.equals("Event: Heartbeat.Alive.Response") ||
                         trim.equals("Packet: Heartbeat.Alive.Response") ||
                         trim.equals("Send: Heartbeat.Alive")
-                ) return;
+                ) {
+                    // System.out.println(pre + message);
+                    return;
+                }
                 super.writeLine(pre, message, error);
             }
         }, Executors.newSingleThreadExecutor(task -> {

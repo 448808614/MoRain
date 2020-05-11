@@ -18,7 +18,6 @@ import cn.mcres.karlatemp.mirai.permission.Permissible;
 import cn.mcres.karlatemp.mirai.permission.PermissionManager;
 import cn.mcres.karlatemp.mirai.plugin.PluginManager;
 import cn.mcres.karlatemp.mxlib.tools.Toolkit;
-import kotlin.Unit;
 import kotlin.coroutines.Continuation;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.BotFactoryJvm;
@@ -108,6 +107,19 @@ public class Bootstrap {
         // 使用自定义的配置
         final Bot bot = BotFactoryJvm.newBot(getLoginQQ(), getLoginPasswd(), new BotConfiguration() {
             {
+                setProtocol(MiraiProtocol.ANDROID_PHONE);
+                if (args.length > 0) {
+                    switch (args[0]) {
+                        case "pad":
+                            setProtocol(MiraiProtocol.ANDROID_PAD);
+                            break;
+                        case "mobile":
+                        case "phone":
+                            setProtocol(MiraiProtocol.ANDROID_PHONE);
+                            break;
+                    }
+                }
+                System.out.println("Using " + getProtocol());
                 setDeviceInfo(context ->
                         SystemDeviceInfoKt.loadAsDeviceInfo(new File("deviceInfo.json"), context)
                 );
@@ -155,8 +167,8 @@ public class Bootstrap {
                     }
                 });
                 setReconnectionRetryTimes(5);
-                setHeartbeatPeriodMillis(10000L);
-                setHeartbeatTimeoutMillis(3000L);
+                setHeartbeatPeriodMillis(3000L);
+                setHeartbeatTimeoutMillis(5000L);
                 setReconnectPeriodMillis(3000L);
                 setFirstReconnectDelayMillis(5000L);
             }
