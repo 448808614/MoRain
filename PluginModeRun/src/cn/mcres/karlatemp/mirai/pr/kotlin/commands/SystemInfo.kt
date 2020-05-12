@@ -18,8 +18,6 @@ import net.mamoe.mirai.message.MessageEvent
 import net.mamoe.mirai.message.data.toMessage
 import java.io.File
 import java.lang.management.ManagementFactory
-import java.time.Instant
-import java.time.ZoneId
 import java.util.*
 
 @KCommand("about")
@@ -27,11 +25,16 @@ import java.util.*
 object SystemInfo : KotlinCommand() {
     private val manager = ManagementFactory.getRuntimeMXBean()
     private val regex = ('\\' + File.pathSeparator).toRegex()
+    private val memoryBean = ManagementFactory.getMemoryMXBean()
     val miraiTester = ".*/mirai-(.*)-([0-9._]+(|-[0-9A-Za-z_]+))\\.jar$".toRegex()
     override suspend fun invoke0(contact: Contact, sender: User, packet: MessageEvent, args: LinkedList<ArgumentToken>) {
         val runtime = manager
+        val memory = memoryBean
         val builder = StringBuilder()
-        builder.append("墨雨橙 Power❤by Mirai.\n")
+        builder.append("Power❤by Mirai.\n")
+        builder.append("----Heap Memory Usage: ${memory.heapMemoryUsage}\n")
+        builder.append("Non Heap Memory Usage: ${memory.nonHeapMemoryUsage}\n")
+        builder.append("Object Pending Finalization Count: ${memory.objectPendingFinalizationCount}\n")
         val path = runtime.classPath
         val split = path.split(regex).map { it.replace('\\', '/') }
         for (classpath in split) {
