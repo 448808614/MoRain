@@ -20,8 +20,6 @@ import com.google.gson.JsonParser;
 import jdk.nashorn.internal.objects.Global;
 import kotlin.coroutines.CoroutineContext;
 import kotlinx.coroutines.CoroutineScope;
-import net.mamoe.mirai.message.ContactMessage;
-import net.mamoe.mirai.message.GroupMessage;
 import net.mamoe.mirai.message.GroupMessageEvent;
 import net.mamoe.mirai.message.data.Message;
 import net.mamoe.mirai.message.data.*;
@@ -117,7 +115,17 @@ public class Main extends Plugin implements CoroutineScope {
             final String string = packet.getMessage().contentToString().trim();
             if (string.isEmpty()) return;
             if (Bootstrap.commandPrefixes.get(string.charAt(0))) return;
+            GroupSettings groupSettings;
+            if (event.getEvent() instanceof GroupMessageEvent) {
+                groupSettings = GroupSettings.getSettings(event.getEvent().getSubject().getId());
+            } else {
+                groupSettings = null;
+            }
+            javadoc:
             if (string.equals("jd")) {
+                if (groupSettings != null) {
+                    if (groupSettings.getBoolean("disable.javadoc")) break javadoc;
+                }
                 if (PermissionManager.PERMISSIBLE_THREAD_LOCAL.get().hasPermission("banned")) {
                     packet.getSubject().sendMessageAsync("不可以!");
                     event.setCancelled(true);
@@ -127,12 +135,6 @@ public class Main extends Plugin implements CoroutineScope {
                 event.setCancelled(true);
             }
             if (PermissionManager.PERMISSIBLE_THREAD_LOCAL.get().hasPermission("banned")) return;
-            GroupSettings groupSettings;
-            if (event.getEvent() instanceof GroupMessageEvent) {
-                groupSettings = GroupSettings.getSettings(event.getEvent().getSubject().getId());
-            } else {
-                groupSettings = null;
-            }
             color_picker:
             {
                 if (groupSettings != null) {
