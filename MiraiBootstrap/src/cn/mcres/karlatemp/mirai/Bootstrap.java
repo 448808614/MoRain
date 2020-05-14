@@ -173,6 +173,7 @@ public class Bootstrap {
                 setFirstReconnectDelayMillis(5000L);
             }
         });
+        IgnoredKt.reload();
         initialize(bot);
         Eval.engine.getClass().getClassLoader();
         do {
@@ -184,6 +185,8 @@ public class Bootstrap {
 
     public static void accept(MessageEvent event) {
         if (event instanceof GroupMessageEvent) {
+            if (IgnoredKt.getIgnoredGroups().contains(event.getSubject().getId()))
+                return;
             final Iterator<SingleMessage> iterator = event.getMessage().iterator();
             while (iterator.hasNext()) {
                 final SingleMessage next = iterator.next();

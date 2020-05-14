@@ -10,6 +10,7 @@ package cn.mcres.karlatemp.mirai.plugin;
 
 import cn.mcres.karlatemp.mirai.AsyncExecKt;
 import cn.mcres.karlatemp.mirai.CommandMgr;
+import cn.mcres.karlatemp.mirai.IgnoredKt;
 import cn.mcres.karlatemp.mirai.command.Reload;
 import cn.mcres.karlatemp.mirai.command.Shutdown;
 import cn.mcres.karlatemp.mxlib.event.HandlerList;
@@ -73,6 +74,7 @@ public class PluginManager {
                 }
             }
         }
+        IgnoredKt.reload();
     }
 
     private static void registerDefaultCommands() {
