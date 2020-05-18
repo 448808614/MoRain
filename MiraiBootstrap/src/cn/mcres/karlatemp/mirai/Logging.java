@@ -11,11 +11,12 @@ import cn.mcres.karlatemp.mxlib.tools.InlinePrintStream;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.utils.MiraiLogger;
 import net.mamoe.mirai.utils.Utils;
+import org.fusesource.jansi.Ansi;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -32,62 +33,32 @@ public class Logging {
     public static Creator creator;
     public static boolean openFileLogging = true;
 
-    public synchronized static void install() {
+    public synchronized static void install() throws FileNotFoundException {
         if (logger != null) return;
         System.setProperty("log4j2.loggerContextFactory", Logging.class.getName());
         SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-        PrintStream printOut = System.out;
-        try {
-            RandomAccessFile raf = new RandomAccessFile("logging.log", "rw");
-            Logging.SyncLogging log = new SyncLogging(raf);
-            PrintStream oo = printOut;
-            printOut = new InlinePrintStream() {
-                @Override
-                public void print(String s) {
-                    if (openFileLogging)
-                        log.print(s);
-                    oo.print(s);
-                }
-
-                @Override
-                public void println() {
-                    if (openFileLogging)
-                        log.println();
-                    oo.println();
-                }
-
-                @Override
-                public void println(String x) {
-                    if (openFileLogging)
-                        log.println(x);
-                    oo.println(x);
-                }
-            };
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-        MXBukkitLib.setLogger(logger = new AsyncLogger(new PrintStreamLogger(
-                printOut, new MessageFactoryImpl(),
-                new AlignmentPrefixSupplier(
-                        (error, line, level, record) -> {
-                            if (record != null) return record.getLoggerName();
-                            return "null";
-                        }
-                ) {
-
-                    @NotNull
-                    @Override
-                    public String get(boolean error, @Nullable String line, @Nullable Level level, @Nullable LogRecord record) {
-                        String date = format.format(new Date());
-                        do {
-                            int p = prln.get();
-                            if (p < 20) break;
-                            if (prln.compareAndSet(p, 19)) break;
-                        } while (true);
-                        return '[' + date + "] " + super.get(error, line, level, record);
+        RandomAccessFile raf = new RandomAccessFile("logging.log", "rw");
+        Logging.SyncLogging log = new SyncLogging(raf);
+        var logging_logger = new PrintStreamLogger(log, new MessageFactoryImpl(), new AlignmentPrefixSupplier(
+                (error, line, level, record) -> {
+                    if (record != null) {
+                        return record.getLoggerName();
                     }
-                }, printOut, printOut
+                    return "null";
+                }
         ) {
+            @NotNull
+            @Override
+            public String get(boolean error, @Nullable String line, @Nullable Level level, @Nullable LogRecord record) {
+                String date = format.format(new Date());
+                do {
+                    int p = prln.get();
+                    if (p < 20) break;
+                    if (prln.compareAndSet(p, 19)) break;
+                } while (true);
+                return '[' + date + "] " + super.get(error, line, level, record);
+            }
+        }, log, log) {
             @Override
             protected void writeLine(String pre, String message, boolean error) {
                 var trim = message.trim();
@@ -101,7 +72,29 @@ public class Logging {
                 }
                 super.writeLine(pre, message, error);
             }
-        }, Executors.newSingleThreadExecutor(task -> {
+        };
+        var console_logger = new PrintStreamLogger(System.out, new MessageFactoryAnsi(), new AlignmentPrefixSupplier(
+                (error, line, level, record) -> {
+                    if (record != null) {
+                        return record.getLoggerName();
+                    }
+                    return "null";
+                }
+        ) {
+            @NotNull
+            @Override
+            public String get(boolean error, @Nullable String line, @Nullable Level level, @Nullable LogRecord record) {
+                String date = format.format(new Date());
+                do {
+                    int p = prln.get();
+                    if (p < 20) break;
+                    if (prln.compareAndSet(p, 19)) break;
+                } while (true);
+                return new Ansi().reset().a('[').fgBrightCyan().a(date).reset().a("] ").a(super.get(error, line, level, record)).reset().toString();
+            }
+        }, System.out, System.out);
+
+        MXBukkitLib.setLogger(logger = new AsyncLogger(new MLogger(console_logger, logging_logger), Executors.newSingleThreadExecutor(task -> {
             Thread t = new Thread(task, "Logger writer");
             t.setDaemon(true);
             return t;
