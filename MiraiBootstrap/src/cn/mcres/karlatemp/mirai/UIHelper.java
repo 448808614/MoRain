@@ -26,7 +26,7 @@ public class UIHelper {
             synchronized (invoke) {
                 invoke.set(false);
                 invoke.notify();
-                jframe.dispose();
+                SwingUtilities.invokeLater(jframe::dispose);
             }
         };
         value.addKeyListener(new KeyAdapter() {
@@ -53,10 +53,16 @@ public class UIHelper {
             }
         });
         jframe.setVisible(true);
+        long ending = System.currentTimeMillis() + 3000 * 60; // 3min
         while (invoke.get()) {
             synchronized (invoke) {
                 if (invoke.get()) {
-                    invoke.wait();
+                    long times = ending - System.currentTimeMillis();
+                    if (times < 0) {
+                        postClose.run();
+                        return "";
+                    }
+                    invoke.wait(times);
                 }
             }
         }
