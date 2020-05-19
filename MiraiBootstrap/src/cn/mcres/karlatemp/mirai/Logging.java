@@ -292,7 +292,7 @@ public class Logging {
     }
 
     public static MiraiLogger newLogger(Bot bot) {
-        Logger logger = Logger.getLogger("bot." + bot.getSelfQQ());
+        Logger logger = Logger.getLogger("bot." + bot.getSelfQQ().getId());
         if (creator != null) creator.initialize(logger, bot);
         return newLogger(logger, false);
     }
