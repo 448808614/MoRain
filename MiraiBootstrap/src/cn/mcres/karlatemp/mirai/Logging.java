@@ -21,6 +21,7 @@ import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -34,6 +35,14 @@ public class Logging {
     public static Creator creator;
     public static boolean openFileLogging = true;
     private static final Pattern dropper = Pattern.compile("\\033\\[[0-9;]*?m");
+    private static final Map<Level, String> lv_ansi = Map.of(
+            Level.SEVERE, new Ansi().fg(Ansi.Color.RED).a("SEVERE").reset().toString(),
+            Level.INFO, new Ansi().fg(Ansi.Color.CYAN).a("INFO").reset().toString(),
+            Level.WARNING, new Ansi().fg(Ansi.Color.YELLOW).a("WARNING").reset().toString(),
+            Level.FINER, new Ansi().fg(Ansi.Color.MAGENTA).a("FINER").reset().toString(),
+            Level.FINE, new Ansi().fg(Ansi.Color.MAGENTA).a("FINE").reset().toString(),
+            Level.FINEST, new Ansi().fg(Ansi.Color.MAGENTA).a("FINEST").reset().toString()
+    );
 
     private static boolean filter(String message) {
         String trim = message.trim();
@@ -85,6 +94,19 @@ public class Logging {
                     return "null";
                 }
         ) {
+            @Override
+            protected int getCharsFontWidth(@NotNull String chars) {
+                return super.getCharsFontWidth(dropper.matcher(chars).replaceAll(""));
+            }
+
+            @NotNull
+            @Override
+            protected String valueOf(@Nullable Level lv) {
+                final var s = lv_ansi.get(lv);
+                if (s != null) return s;
+                return super.valueOf(lv);
+            }
+
             @NotNull
             @Override
             public String get(boolean error, @Nullable String line, @Nullable Level level, @Nullable LogRecord record) {
