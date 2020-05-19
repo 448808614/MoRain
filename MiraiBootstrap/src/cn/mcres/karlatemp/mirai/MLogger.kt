@@ -11,10 +11,66 @@ package cn.mcres.karlatemp.mirai
 import cn.mcres.karlatemp.mxlib.logging.ILogger
 import java.io.PrintStream
 import java.lang.management.ThreadInfo
+import java.util.*
 import java.util.logging.Handler
+import java.util.logging.Level
 import java.util.logging.LogRecord
 
 class MLogger(private vararg val loggers: ILogger) : ILogger {
+    override fun printThreadInfo(thread: Thread, fullFrames: Boolean, emptyPrefix: Boolean): ILogger {
+        loggers.forEach { it.printThreadInfo(thread, fullFrames, emptyPrefix) }
+        return this
+    }
+
+    override fun printStackTrace(thr: Throwable): ILogger {
+        loggers.forEach { it.printStackTrace(thr) }
+        return this
+    }
+
+    override fun error(line: Any?): ILogger {
+        loggers.forEach { it.error(line) }
+        return this
+    }
+
+    override fun printf(data: Any?): ILogger {
+        loggers.forEach { it.printf(data) }
+        return this
+    }
+
+    override fun printf(err: Boolean, ln: String?): ILogger {
+        loggers.forEach { it.printf(err, ln) }
+        return this
+    }
+
+    override fun isError(level: Level?): Boolean {
+        return loggers[0].isError(level)
+    }
+
+    override fun println(line: String?): ILogger {
+        loggers.forEach { it.println(line) }
+        return this
+    }
+
+    override fun format(format: String?, vararg args: Any?): ILogger {
+        loggers.forEach { it.format(format, *args) }
+        return this
+    }
+
+    override fun format(locale: Locale?, format: String?, vararg args: Any?): ILogger {
+        loggers.forEach { it.format(locale, format, *args) }
+        return this
+    }
+
+    override fun errformat(format: String?, vararg args: Any?): ILogger {
+        loggers.forEach { it.errformat(format, *args) }
+        return this
+    }
+
+    override fun errformat(locale: Locale?, format: String?, vararg args: Any?): ILogger {
+        loggers.forEach { it.errformat(locale, format, args) }
+        return this
+    }
+
     override fun getStackTraceElementMessage(track: StackTraceElement?): String {
         return loggers[0].getStackTraceElementMessage(track)
     }

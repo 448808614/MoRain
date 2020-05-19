@@ -26,12 +26,14 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public class Logging {
     public static ILogger logger;
     public static MLoggerHandler handler;
     public static Creator creator;
     public static boolean openFileLogging = true;
+    private static final Pattern dropper = Pattern.compile("\\033\\[[0-9;]*?m");
 
     private static boolean filter(String message) {
         String trim = message.trim();
@@ -97,7 +99,7 @@ public class Logging {
         }, System.out, System.out) {
             @Override
             protected void writeLine(String pre, String message, boolean error) {
-                if (filter(message)) {
+                if (filter(dropper.matcher(message).replaceAll(""))) {
                     return;
                 }
                 super.writeLine(pre, message, error);
