@@ -33,6 +33,14 @@ public class Logging {
     public static Creator creator;
     public static boolean openFileLogging = true;
 
+    private static boolean filter(String message) {
+        String trim = message.trim();
+        return trim.equals("Send done: Heartbeat.Alive") ||
+                trim.equals("Event: Heartbeat.Alive.Response") ||
+                trim.equals("Packet: Heartbeat.Alive.Response") ||
+                trim.equals("Send: Heartbeat.Alive");
+    }
+
     public synchronized static void install() throws FileNotFoundException {
         if (logger != null) return;
         System.setProperty("log4j2.loggerContextFactory", Logging.class.getName());
@@ -61,13 +69,7 @@ public class Logging {
         }, log, log) {
             @Override
             protected void writeLine(String pre, String message, boolean error) {
-                var trim = message.trim();
-                if (trim.equals("Send done: Heartbeat.Alive") ||
-                        trim.equals("Event: Heartbeat.Alive.Response") ||
-                        trim.equals("Packet: Heartbeat.Alive.Response") ||
-                        trim.equals("Send: Heartbeat.Alive")
-                ) {
-                    // System.out.println(pre + message);
+                if (filter(message)) {
                     return;
                 }
                 super.writeLine(pre, message, error);
@@ -92,7 +94,15 @@ public class Logging {
                 } while (true);
                 return new Ansi().reset().a('[').fgBrightCyan().a(date).reset().a("] ").a(super.get(error, line, level, record)).reset().toString();
             }
-        }, System.out, System.out);
+        }, System.out, System.out) {
+            @Override
+            protected void writeLine(String pre, String message, boolean error) {
+                if (filter(message)) {
+                    return;
+                }
+                super.writeLine(pre, message, error);
+            }
+        };
 
         MXBukkitLib.setLogger(logger = new AsyncLogger(new MLogger(console_logger, logging_logger), Executors.newSingleThreadExecutor(task -> {
             Thread t = new Thread(task, "Logger writer");
