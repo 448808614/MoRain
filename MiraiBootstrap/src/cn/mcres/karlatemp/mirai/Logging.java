@@ -10,6 +10,7 @@ import cn.mcres.karlatemp.mxlib.logging.*;
 import cn.mcres.karlatemp.mxlib.tools.InlinePrintStream;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.utils.MiraiLogger;
+import net.mamoe.mirai.utils.MiraiLoggerPlatformBase;
 import net.mamoe.mirai.utils.Utils;
 import org.fusesource.jansi.Ansi;
 import org.jetbrains.annotations.NotNull;
@@ -46,10 +47,9 @@ public class Logging {
 
     private static boolean filter(String message) {
         String trim = message.trim();
-        return trim.equals("Send done: Heartbeat.Alive") ||
-                trim.equals("Event: Heartbeat.Alive.Response") ||
-                trim.equals("Packet: Heartbeat.Alive.Response") ||
-                trim.equals("Send: Heartbeat.Alive");
+        return trim.equals("Send done: Heartbeat.Alive")
+                || trim.contains("Heartbeat.Alive")
+                ;
     }
 
     public synchronized static void install() throws FileNotFoundException {
@@ -168,9 +168,7 @@ public class Logging {
             if (creator != null)
                 creator.initialize(logger, null);
         }
-        return new MiraiLogger() {
-            public boolean enabled = true;
-            private MiraiLogger follower;
+        return new MiraiLoggerPlatformBase() {
 
             @Nullable
             @Override
@@ -179,136 +177,63 @@ public class Logging {
             }
 
             @Override
-            public boolean isEnabled() {
-                return enabled;
-            }
-
-            @Nullable
-            @Override
-            public MiraiLogger getFollower() {
-                return follower;
-            }
-
-            @Override
-            public void setFollower(@Nullable MiraiLogger miraiLogger) {
-                follower = miraiLogger;
-            }
-
-            @Override
-            public void verbose(@Nullable String s) {
-                if (!enabled) return;
-                if (follower != null) follower.verbose(s);
+            public void verbose0(@Nullable String s) {
                 logger.log(Level.FINE, s);
             }
 
             @Override
             public void verbose(@Nullable Throwable throwable) {
-                if (!enabled) return;
-                if (follower != null) follower.verbose(throwable);
                 logger.log(Level.FINE, null, throwable);
             }
 
             @Override
-            public void verbose(@Nullable String s, @Nullable Throwable throwable) {
-                if (!enabled) return;
-                if (follower != null) follower.verbose(s, throwable);
+            public void verbose0(@Nullable String s, @Nullable Throwable throwable) {
                 logger.log(Level.FINE, s, throwable);
             }
 
             @Override
-            public void debug(@Nullable String s) {
-                if (!enabled) return;
-                if (follower != null) follower.debug(s);
+            public void debug0(@Nullable String s) {
                 logger.finer(s);
             }
 
             @Override
             public void debug(@Nullable Throwable throwable) {
-                if (!enabled) return;
-                if (follower != null) follower.debug(throwable);
                 logger.log(Level.FINER, null, throwable);
             }
 
             @Override
-            public void debug(@Nullable String s, @Nullable Throwable throwable) {
-                if (follower != null) follower.debug(s, throwable);
+            public void debug0(@Nullable String s, @Nullable Throwable throwable) {
                 logger.log(Level.FINER, s, throwable);
             }
 
             @Override
-            public void info(@Nullable String s) {
-                if (!enabled) return;
-                if (follower != null) follower.info(s);
+            public void info0(@Nullable String s) {
                 logger.log(Level.INFO, s);
             }
 
             @Override
-            public void info(@Nullable Throwable throwable) {
-                if (!enabled) return;
-                if (follower != null) follower.info(throwable);
-                logger.log(Level.INFO, null, throwable);
-            }
-
-            @Override
-            public void info(@Nullable String s, @Nullable Throwable throwable) {
-                if (!enabled) return;
-                if (follower != null) follower.info(s, throwable);
+            public void info0(@Nullable String s, @Nullable Throwable throwable) {
                 logger.log(Level.INFO, s, throwable);
             }
 
             @Override
-            public void warning(@Nullable String s) {
-                if (!enabled) return;
-                if (follower != null) follower.warning(s);
+            public void warning0(@Nullable String s) {
                 logger.log(Level.WARNING, s);
             }
 
             @Override
-            public void warning(@Nullable Throwable throwable) {
-                if (!enabled) return;
-                if (follower != null) follower.warning(throwable);
-                logger.log(Level.WARNING, null, throwable);
-            }
-
-            @Override
-            public void warning(@Nullable String s, @Nullable Throwable throwable) {
-                if (!enabled) return;
-                if (follower != null) follower.warning(s, throwable);
+            public void warning0(@Nullable String s, @Nullable Throwable throwable) {
                 logger.log(Level.WARNING, s, throwable);
             }
 
             @Override
-            public void error(@Nullable String s) {
-                if (!enabled) return;
-                if (follower != null) follower.error(s);
+            public void error0(@Nullable String s) {
                 logger.log(Level.SEVERE, s);
             }
 
             @Override
-            public void error(@Nullable Throwable throwable) {
-                if (!enabled) return;
-                if (follower != null) follower.error(throwable);
-                logger.log(Level.SEVERE, null, throwable);
-            }
-
-            @Override
-            public void error(@Nullable String s, @Nullable Throwable throwable) {
-                if (!enabled) return;
-                if (follower != null) follower.error(s, throwable);
+            public void error0(@Nullable String s, @Nullable Throwable throwable) {
                 logger.log(Level.SEVERE, s, throwable);
-            }
-
-            @NotNull
-            @Override
-            public <T extends MiraiLogger> T plus(@NotNull T t) {
-                setFollower(t);
-                return t;
-            }
-
-            @Override
-            public void plusAssign(@NotNull MiraiLogger miraiLogger) {
-                if (follower == null) follower = miraiLogger;
-                else follower.plusAssign(miraiLogger);
             }
         };
     }

@@ -32,6 +32,7 @@ import net.mamoe.mirai.message.data.MessageSource;
 import net.mamoe.mirai.message.data.PlainText;
 import net.mamoe.mirai.message.data.QuoteReply;
 import net.mamoe.mirai.message.data.SingleMessage;
+import net.mamoe.mirai.qqandroid.network.protocol.packet.PacketFactoryKt;
 import net.mamoe.mirai.utils.BotConfiguration;
 import net.mamoe.mirai.utils.LoginSolver;
 import net.mamoe.mirai.utils.MiraiLogger;
@@ -99,10 +100,12 @@ public class Bootstrap {
         return VERSION;
     }
 
+    @SuppressWarnings("KotlinInternalInJava")
     public static void main(String[] args) throws Exception {
         AnsiConsole.systemInstall();
         // MiraiWSLogger.install(6765);
         Logging.install();
+        PacketFactoryKt.getPacketLogger().enable();
         Logging.creator = (logger, bot) -> logger.setLevel(Level.ALL);
         // 使用自定义的配置
         final Bot bot = BotFactoryJvm.newBot(getLoginQQ(), getLoginPasswd(), new BotConfiguration() {
