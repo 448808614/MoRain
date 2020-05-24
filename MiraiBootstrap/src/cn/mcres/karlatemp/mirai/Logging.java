@@ -56,6 +56,7 @@ public class Logging {
         if (logger != null) return;
         System.setProperty("log4j2.loggerContextFactory", Logging.class.getName());
         SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat format1 = new SimpleDateFormat("yyyy/MM/dd");
         RandomAccessFile raf = new RandomAccessFile("logging.log", "rw");
         Logging.SyncLogging log = new SyncLogging(raf);
         var logging_logger = new PrintStreamLogger(log, new MessageFactoryImpl(), new AlignmentPrefixSupplier(
@@ -69,17 +70,18 @@ public class Logging {
             @NotNull
             @Override
             public String get(boolean error, @Nullable String line, @Nullable Level level, @Nullable LogRecord record) {
-                String date = format.format(new Date());
+                var date = new Date();
                 do {
                     int p = prln.get();
                     if (p < 20) break;
                     if (prln.compareAndSet(p, 19)) break;
                 } while (true);
-                return '[' + date + "] " + super.get(error, line, level, record);
+                return '[' + format1.format(date) + ' ' + format.format(date) + "] " + super.get(error, line, level, record);
             }
         }, log, log) {
             @Override
             protected void writeLine(String pre, String message, boolean error) {
+                if (!Logging.openFileLogging) return;
                 if (filter(message)) {
                     return;
                 }
@@ -110,13 +112,16 @@ public class Logging {
             @NotNull
             @Override
             public String get(boolean error, @Nullable String line, @Nullable Level level, @Nullable LogRecord record) {
-                String date = format.format(new Date());
+                var date = new Date();
                 do {
                     int p = prln.get();
                     if (p < 20) break;
                     if (prln.compareAndSet(p, 19)) break;
                 } while (true);
-                return new Ansi().reset().a('[').fgBrightCyan().a(date).reset().a("] ").a(super.get(error, line, level, record)).reset().toString();
+                return new Ansi().reset()
+                        .a('[').fgBrightYellow().a(format1.format(date)).a(' ')
+                        .fgBrightCyan().a(format.format(date)).reset().a("] ")
+                        .a(super.get(error, line, level, record)).reset().toString();
             }
         }, System.out, System.out) {
             @Override

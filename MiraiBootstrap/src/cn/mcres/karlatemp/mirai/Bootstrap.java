@@ -100,12 +100,13 @@ public class Bootstrap {
         return VERSION;
     }
 
-    @SuppressWarnings("KotlinInternalInJava")
+    // @SuppressWarnings("KotlinInternalInJava")
     public static void main(String[] args) throws Exception {
         AnsiConsole.systemInstall();
         // MiraiWSLogger.install(6765);
         Logging.install();
-        PacketFactoryKt.getPacketLogger().enable();
+        // java.lang.StackOverflowError
+        // PacketFactoryKt.getPacketLogger().enable();
         Logging.creator = (logger, bot) -> logger.setLevel(Level.ALL);
         // 使用自定义的配置
         final Bot bot = BotFactoryJvm.newBot(getLoginQQ(), getLoginPasswd(), new BotConfiguration() {
