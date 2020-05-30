@@ -144,8 +144,8 @@ object UntilTheEndNotify : AutoInitializer {
                     // https://gitee.com/Karlatemp-bot/UntilTheEndReleases/blob/master/releases/UntilTheEnd%20v5.7.2.4-Release.jar
                     // https://github.com/UntilTheEndDev/UntilTheEndReleases/blob/master/shadow/until-the-end/UntilTheEnd%20v5.7.2.4-Release.jar
                     it.add("============")
-                    it.add("https://gitee.com/Karlatemp-bot/UntilTheEndReleases/blob/master/releases/UntilTheEnd%20v$urlEnc.jar")
-                    it.add("https://github.com/UntilTheEndDev/UntilTheEndReleases/blob/master/shadow/until-the-end/UntilTheEnd%20v$urlEnc.jar")
+                    it.add("国内下载地址: https://gitee.com/Karlatemp-bot/UntilTheEndReleases/blob/master/releases/UntilTheEnd%20v$urlEnc.jar")
+                    it.add("国际下载地址: https://github.com/UntilTheEndDev/UntilTheEndReleases/blob/master/shadow/until-the-end/UntilTheEnd%20v$urlEnc.jar")
                 }.joinToString("\n").also { updateMsg ->
                     callbacks.forEach {
                         scope.launch {
